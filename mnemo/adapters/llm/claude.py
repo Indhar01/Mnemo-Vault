@@ -1,6 +1,5 @@
 import os
 from dataclasses import dataclass, field
-from typing import Optional
 
 
 @dataclass
@@ -11,11 +10,13 @@ class ClaudeLLMConfig:
 
 
 class ClaudeLLMClient:
-    def __init__(self, api_key: Optional[str] = None, base_url: Optional[str] = None):
+    def __init__(self, api_key: str | None = None, base_url: str | None = None):
         try:
             from anthropic import Anthropic
         except ImportError as exc:
-            raise RuntimeError("Anthropic client not installed. Run: pip install anthropic") from exc
+            raise RuntimeError(
+                "Anthropic client not installed. Run: pip install anthropic"
+            ) from exc
 
         effective_base_url = base_url or os.environ.get("ANTHROPIC_BASE_URL")
         if api_key and effective_base_url:

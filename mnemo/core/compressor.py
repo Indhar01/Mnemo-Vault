@@ -1,6 +1,7 @@
 # core/compressor.py
 from .node import MemoryNode
 
+
 class TokenCompressor:
     def __init__(self, token_limit: int = 4096, chars_per_token: float = 3.8):
         self.char_limit = int(token_limit * chars_per_token)

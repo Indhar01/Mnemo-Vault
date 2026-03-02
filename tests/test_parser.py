@@ -38,10 +38,7 @@ class ParserTests(unittest.TestCase):
             root = Path(tmp)
             md = root / "x.md"
             md.write_text(
-                "---\n"
-                "memory_type: unknown\n"
-                "---\n\n"
-                "hello\n",
+                "---\nmemory_type: unknown\n---\n\nhello\n",
                 encoding="utf-8",
             )
 

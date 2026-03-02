@@ -1,11 +1,11 @@
 import argparse
 import json
 import os
-from urllib import request, error
+from urllib import error, request
 
+from .core.assistant import build_answer_prompt, retrieve_cited_context, run_answer
 from .core.enums import MemoryType
 from .core.kernel import MemoryKernel
-from .core.assistant import build_answer_prompt, retrieve_cited_context, run_answer
 
 
 def _run_ask(kernel: MemoryKernel, args) -> None:
@@ -47,7 +47,9 @@ def _run_ask(kernel: MemoryKernel, args) -> None:
             print("\n=== Sources ===")
             for src in sources:
                 tags = ", ".join(src.tags) if src.tags else "-"
-                print(f"[{src.source_id}] {src.title} (id={src.node_id}, type={src.memory_type}, tags={tags})")
+                print(
+                    f"[{src.source_id}] {src.title} (id={src.node_id}, type={src.memory_type}, tags={tags})"
+                )
 
     if args.chat:
         print("Interactive chat mode. Type 'exit' or 'quit' to stop.")
@@ -77,7 +79,9 @@ def _run_doctor(args) -> None:
     anth_key = os.environ.get("ANTHROPIC_API_KEY")
     print(f"claude_api_key: {'present' if anth_key else 'missing'}")
 
-    ollama_url = (args.ollama_url or os.environ.get("OLLAMA_BASE_URL") or "http://localhost:11434").rstrip("/")
+    ollama_url = (
+        args.ollama_url or os.environ.get("OLLAMA_BASE_URL") or "http://localhost:11434"
+    ).rstrip("/")
     tags_url = f"{ollama_url}/api/tags"
     try:
         req = request.Request(tags_url, method="GET")
@@ -87,6 +91,7 @@ def _run_doctor(args) -> None:
         print(f"ollama: reachable ({len(models)} models) @ {ollama_url}")
     except error.URLError as exc:
         print(f"ollama: unreachable @ {ollama_url} ({exc})")
+
 
 def main():
     parser = argparse.ArgumentParser(description="Mnemo CLI")
@@ -118,16 +123,22 @@ def main():
     context_parser.add_argument("--tags", nargs="*", default=[], help="Optional tag filter")
     context_parser.add_argument("--depth", type=int, default=2, help="Graph traversal depth")
     context_parser.add_argument("--top-k", type=int, default=8, help="Max memories to return")
-    context_parser.add_argument("--token-limit", type=int, default=2048, help="Compression token limit")
+    context_parser.add_argument(
+        "--token-limit", type=int, default=2048, help="Compression token limit"
+    )
 
     ask_parser = subparsers.add_parser("ask", help="Ask an LLM with retrieved memory context")
-    ask_parser.add_argument("--provider", choices=["claude", "ollama"], default="ollama", help="LLM provider")
+    ask_parser.add_argument(
+        "--provider", choices=["claude", "ollama"], default="ollama", help="LLM provider"
+    )
     ask_parser.add_argument("--query", help="Question text (omit in --chat mode)")
     ask_parser.add_argument("--chat", action="store_true", help="Interactive chat mode")
     ask_parser.add_argument("--tags", nargs="*", default=[], help="Optional tag filter")
     ask_parser.add_argument("--depth", type=int, default=2, help="Graph traversal depth")
     ask_parser.add_argument("--top-k", type=int, default=8, help="Max memories to retrieve")
-    ask_parser.add_argument("--token-limit", type=int, default=2048, help="Context compression budget")
+    ask_parser.add_argument(
+        "--token-limit", type=int, default=2048, help="Context compression budget"
+    )
     ask_parser.add_argument("--model", default=None, help="Provider-specific model")
     ask_parser.add_argument("--base-url", default=None, help="Provider base URL override")
     ask_parser.add_argument("--max-tokens", type=int, default=1024, help="Max generated tokens")
@@ -135,7 +146,9 @@ def main():
     ask_parser.add_argument("--show-context", action="store_true", help="Print context sent to LLM")
     ask_parser.add_argument("--no-citations", action="store_true", help="Hide source list output")
 
-    doctor_parser = subparsers.add_parser("doctor", help="Run environment and integration diagnostics")
+    doctor_parser = subparsers.add_parser(
+        "doctor", help="Run environment and integration diagnostics"
+    )
     doctor_parser.add_argument("--ollama-url", default=None, help="Override Ollama base URL")
 
     args = parser.parse_args()
@@ -173,6 +186,7 @@ def main():
     if args.command == "doctor":
         _run_doctor(args)
         return
+
 
 if __name__ == "__main__":
     main()

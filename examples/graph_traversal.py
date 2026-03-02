@@ -12,7 +12,7 @@ kernel.remember(
     Common algorithms include [[bfs]] and [[dfs]].
     """,
     memory_type=MemoryType.SEMANTIC,
-    tags=["algorithms", "graphs"]
+    tags=["algorithms", "graphs"],
 )
 
 kernel.remember(
@@ -22,7 +22,7 @@ kernel.remember(
     Used in [[shortest-path]] problems.
     """,
     memory_type=MemoryType.PROCEDURAL,
-    tags=["algorithms", "search"]
+    tags=["algorithms", "search"],
 )
 
 kernel.remember(
@@ -32,7 +32,7 @@ kernel.remember(
     Useful for [[topological-sort]] and cycle detection.
     """,
     memory_type=MemoryType.PROCEDURAL,
-    tags=["algorithms", "search"]
+    tags=["algorithms", "search"],
 )
 
 # Index the vault
@@ -42,7 +42,7 @@ kernel.ingest()
 nodes = kernel.retrieve_nodes(
     query="graph algorithms",
     depth=2,  # Will traverse 2 hops through the graph
-    top_k=10
+    top_k=10,
 )
 
 print(f"Retrieved {len(nodes)} related memories:")

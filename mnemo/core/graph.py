@@ -1,6 +1,8 @@
 # core/graph.py
 from collections import defaultdict, deque
+
 from .node import MemoryNode
+
 
 class VaultGraph:
     def __init__(self):

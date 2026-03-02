@@ -1,7 +1,7 @@
 import json
 import os
 from dataclasses import dataclass, field
-from urllib import request, error
+from urllib import error, request
 
 
 @dataclass

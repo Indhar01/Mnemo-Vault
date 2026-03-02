@@ -10,7 +10,7 @@ kernel.remember(
     title="Python Best Practices",
     content="Always use type hints and write comprehensive docstrings.",
     memory_type=MemoryType.SEMANTIC,
-    tags=["python", "best-practices"]
+    tags=["python", "best-practices"],
 )
 
 # Index the vault
@@ -20,10 +20,7 @@ print(f"Total memories: {stats['total']}")
 
 # Query the vault
 context = kernel.context_window(
-    query="What are the Python best practices?",
-    tags=["python"],
-    depth=2,
-    top_k=5
+    query="What are the Python best practices?", tags=["python"], depth=2, top_k=5
 )
 
 print("\nRetrieved Context:")

@@ -1,7 +1,8 @@
 # core/retriever.py
-from .graph import VaultGraph
 from .enums import MemoryType
+from .graph import VaultGraph
 from .node import MemoryNode
+
 
 class HybridRetriever:
     def __init__(self, graph: VaultGraph, embedding_adapter=None):
@@ -22,7 +23,7 @@ class HybridRetriever:
         candidates: dict[str, MemoryNode] = {}
 
         # 1. Graph traversal from seeds
-        for seed_id in (seed_ids or []):
+        for seed_id in seed_ids or []:
             seed = self.graph.get(seed_id)
             if seed:
                 candidates[seed.id] = seed
@@ -33,18 +34,21 @@ class HybridRetriever:
         # 2. Metadata filter
         # Only fetch from full graph if filters are applied or we have no seeds
         filters_active = (tags is not None) or (memory_type is not None) or (min_salience > 0.0)
-        
+
         if filters_active or not candidates:
-            filtered = self.graph.filter(tags=tags, memory_type=memory_type, min_salience=min_salience)
+            filtered = self.graph.filter(
+                tags=tags, memory_type=memory_type, min_salience=min_salience
+            )
             for n in filtered:
                 candidates[n.id] = n
-
 
         # 3. Optional: re-rank with vector similarity
         if self.embeddings and query:
             candidates = self._rerank(query, list(candidates.values()))
         else:
-            candidates = sorted(candidates.values(), key=lambda n: (n.salience, n.access_count), reverse=True)
+            candidates = sorted(
+                candidates.values(), key=lambda n: (n.salience, n.access_count), reverse=True
+            )
 
         return candidates[:top_k]
 

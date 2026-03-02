@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import List
 
 from .kernel import MemoryKernel
 from .node import MemoryNode
@@ -112,7 +111,7 @@ def run_answer(
 def retrieve_cited_context(
     kernel: MemoryKernel,
     query: str,
-    tags: List[str] | None = None,
+    tags: list[str] | None = None,
     depth: int = 2,
     top_k: int = 8,
     token_limit: int = 2048,

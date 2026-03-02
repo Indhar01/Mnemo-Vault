@@ -5,20 +5,21 @@ from typing import Any
 
 from .enums import MemoryType
 
+
 @dataclass
 class MemoryNode:
-    id: str                          # Derived from file path (slug)
+    id: str  # Derived from file path (slug)
     title: str
     content: str
     memory_type: MemoryType = MemoryType.SEMANTIC
 
     # Graph relationships
-    links: list[str] = field(default_factory=list)      # Outgoing wikilinks
+    links: list[str] = field(default_factory=list)  # Outgoing wikilinks
     backlinks: list[str] = field(default_factory=list)  # Populated by graph
     tags: list[str] = field(default_factory=list)
 
     # Metadata / reinforcement signals
-    salience: float = 1.0           # 0.0–1.0, boosted on access/linking
+    salience: float = 1.0  # 0.0–1.0, boosted on access/linking
     access_count: int = 0
     last_accessed: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
     created_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))

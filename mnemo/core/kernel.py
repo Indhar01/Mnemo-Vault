@@ -1,15 +1,15 @@
-from pathlib import Path
-from datetime import datetime, timezone
-from typing import List, Dict
 import re
+from datetime import datetime, timezone
+from pathlib import Path
+
 import yaml
 
 from .compressor import TokenCompressor
 from .enums import MemoryType
 from .graph import VaultGraph
 from .indexer import VaultIndexer
-from .retriever import HybridRetriever
 from .node import MemoryNode
+from .retriever import HybridRetriever
 
 
 class MemoryKernel:
@@ -22,7 +22,7 @@ class MemoryKernel:
         self.retriever = HybridRetriever(self.graph, embedding_adapter=embedding_adapter)
 
     @staticmethod
-    def _normalize_tags(tags: List[str] | None) -> list[str]:
+    def _normalize_tags(tags: list[str] | None) -> list[str]:
         if not tags:
             return []
         normalized = []
@@ -37,7 +37,7 @@ class MemoryKernel:
         slug = re.sub(r"[^a-zA-Z0-9]+", "-", text.strip().lower()).strip("-")
         return slug or datetime.now(timezone.utc).strftime("memory-%Y%m%d-%H%M%S")
 
-    def ingest(self, force: bool = False) -> Dict[str, int]:
+    def ingest(self, force: bool = False) -> dict[str, int]:
         """
         Ingests all memories from the vault.
         """
@@ -52,7 +52,7 @@ class MemoryKernel:
         title: str,
         content: str,
         memory_type: MemoryType = MemoryType.FACT,
-        tags: List[str] = None,
+        tags: list[str] = None,
     ):
         """
         Creates a new memory.
@@ -87,7 +87,7 @@ class MemoryKernel:
     def context_window(
         self,
         query: str,
-        tags: List[str] = None,
+        tags: list[str] = None,
         depth: int = 2,
         top_k: int = 8,
         token_limit: int = 2048,
@@ -102,7 +102,7 @@ class MemoryKernel:
     def retrieve_nodes(
         self,
         query: str,
-        tags: List[str] = None,
+        tags: list[str] = None,
         depth: int = 2,
         top_k: int = 8,
     ) -> list[MemoryNode]:

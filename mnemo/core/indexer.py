@@ -1,10 +1,12 @@
 # core/indexer.py
 import json
 from pathlib import Path
-from .parser import parse_file
+
 from .graph import VaultGraph
+from .parser import parse_file
 
 CACHE_FILE = ".mnemo_cache.json"
+
 
 class VaultIndexer:
     def __init__(self, vault_root: Path):
@@ -39,7 +41,7 @@ class VaultIndexer:
             mtime = md_file.stat().st_mtime
             new_mtimes[rel] = mtime
 
-            unchanged = (not force and self._mtime_cache.get(rel) == mtime)
+            unchanged = not force and self._mtime_cache.get(rel) == mtime
             if unchanged:
                 skipped += 1
             node = parse_file(md_file, self.root)
