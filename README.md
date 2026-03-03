@@ -4,7 +4,7 @@
 [![Python Version](https://img.shields.io/pypi/pyversions/recallgraph)](https://pypi.org/project/recallgraph/)
 [![License](https://img.shields.io/github/license/Indhar01/RecallGraph)](https://github.com/Indhar01/RecallGraph/blob/main/LICENSE)
 [![Code style: ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
-[![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://github.com/pre-commit/pre-commit)
+
 
 A graph-based memory system for LLMs with intelligent retrieval. RecallGraph provides a powerful solution to the LLM memory problem by combining knowledge graphs, hybrid retrieval, and semantic search.
 
