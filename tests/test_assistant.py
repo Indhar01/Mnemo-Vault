@@ -2,7 +2,11 @@ import tempfile
 import unittest
 
 from recallgraph import MemoryKernel, MemoryType
-from recallgraph.core.assistant import build_answer_prompt, build_cited_context, retrieve_cited_context
+from recallgraph.core.assistant import (
+    build_answer_prompt,
+    build_cited_context,
+    retrieve_cited_context,
+)
 from recallgraph.core.node import MemoryNode
 
 
