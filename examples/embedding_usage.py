@@ -1,14 +1,11 @@
 """Example demonstrating embedding support for semantic search."""
 
 from memograph import MemoryKernel, MemoryType
+from memograph.adapters.embeddings.sentence_transformers import SentenceTransformerEmbeddings
 
 # Choose your embedding provider:
 
 # Option 1: Sentence Transformers (Local, Free, No API Key)
-from memograph.adapters.embeddings.sentence_transformers import (
-    SentenceTransformerEmbeddings,
-)
-
 embedder = SentenceTransformerEmbeddings(
     model_name="all-MiniLM-L6-v2",  # Fast, good quality
     device="cpu",  # or "cuda" for GPU, "mps" for Apple Silicon
