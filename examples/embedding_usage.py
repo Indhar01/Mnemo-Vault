@@ -79,4 +79,24 @@ kernel.remember(
 # Index the vault (generates and caches embeddings)
 print("Indexing vault and generating embeddings...")
 stats = kernel.ingest()
-print(f"✓ Indexed {
+print(f"✓ Indexed {stats['indexed']} memories, total: {stats['total']}")
+
+# Query with semantic search enabled
+print("\nQuerying: 'programming languages'")
+nodes = kernel.retrieve_nodes(query="programming languages", top_k=3)
+
+print(f"\nFound {len(nodes)} relevant memories:")
+for node in nodes:
+    print(f"  - {node.title} (tags: {node.tags})")
+
+# Generate context window for LLM
+context = kernel.context_window(
+    query="What programming topics should I learn?",
+    tags=["programming"],
+    depth=1,
+    top_k=3,
+    token_limit=500,
+)
+
+print("\nGenerated context for LLM:")
+print(context[:200] + "..." if len(context) > 200 else context)

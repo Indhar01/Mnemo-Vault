@@ -7,7 +7,7 @@ from .base import EmbeddingAdapter
 class SentenceTransformerEmbeddings(EmbeddingAdapter):
     """
     Local embedding adapter using sentence-transformers.
-    
+
     Popular models:
     - 'all-MiniLM-L6-v2': Fast, 384 dimensions, good quality
     - 'all-mpnet-base-v2': Slower, 768 dimensions, better quality
@@ -17,7 +17,7 @@ class SentenceTransformerEmbeddings(EmbeddingAdapter):
     def __init__(self, model_name: str = "all-MiniLM-L6-v2", device: str = "cpu"):
         """
         Initialize sentence-transformers embedding model.
-        
+
         Args:
             model_name: HuggingFace model identifier
             device: 'cpu', 'cuda', or 'mps' (for Apple Silicon)

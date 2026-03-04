@@ -60,7 +60,7 @@ class HybridRetriever:
                 node.embedding = self.embeddings.embed(node.content)
             sim = self._cosine_similarity(q_emb, node.embedding)
             scored.append((sim, node))
-        return [n for _, n in sorted(scored, reverse=True)]
+        return [n for _, n in sorted(scored, key=lambda x: x[0], reverse=True)]
 
     @staticmethod
     def _cosine_similarity(left: list[float], right: list[float]) -> float:
