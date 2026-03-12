@@ -75,12 +75,15 @@ anthropic = [
 ollama = [
     "ollama>=0.3.0",
 ]
+litellm = [
+    "litellm>=1.0.0",
+]
 embeddings = [
     "sentence-transformers>=2.2.0",
     "numpy>=1.24.0",
 ]
 all = [
-    "memograph[openai,anthropic,ollama,embeddings]",
+    "memograph[openai,anthropic,ollama,litellm,embeddings]",
 ]
 dev = [
     "pytest>=7.4.0",
