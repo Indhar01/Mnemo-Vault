@@ -654,7 +654,7 @@ def main():
             )
 
             # Print summary
-            print(f"\n{'='*50}")
+            print(f"\n{'=' * 50}")
             print("Import Summary:")
             print(f"  ✓ Success: {results['success']}")
             print(f"  ⊘ Skipped: {results['skipped']}")
@@ -671,13 +671,13 @@ def main():
 
         # Auto-ingest if requested
         if args.auto_ingest and (results["success"] if source_path.is_dir() else success):
-            print(f"\n{'='*50}")
+            print(f"\n{'=' * 50}")
             print("Running ingest...")
             stats = kernel.ingest()
             print(f"✓ Indexed {stats['indexed']} files")
             print(f"  Total memories in vault: {stats['total']}")
         else:
-            print(f"\n{'='*50}")
+            print(f"\n{'=' * 50}")
             print(f"Remember to run: memograph --vault {args.vault} ingest")
 
         return
