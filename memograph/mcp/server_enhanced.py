@@ -20,13 +20,13 @@ logger = logging.getLogger(__name__)
 
 class EnhancedMCPTools:
     """Enhanced tools for MemoGraph MCP Server."""
-    
+
     def __init__(self, server):
         """Initialize with reference to main server instance."""
         self.server = server
         self.vault_path = server.vault_path
         self.kernel = server.kernel
-    
+
     async def list_available_tools(self) -> dict[str, Any]:
         """List all available MCP tools with descriptions.
 
@@ -87,7 +87,7 @@ class EnhancedMCPTools:
                 error_msg = f"Memory not found: {memory_id}"
                 if suggestions:
                     error_msg += f". Did you mean: {', '.join(suggestions)}?"
-                
+
                 return {
                     "success": False,
                     "error": error_msg,
@@ -157,7 +157,7 @@ class EnhancedMCPTools:
                 error_msg = f"Memory not found: {memory_id}"
                 if suggestions:
                     error_msg += f". Did you mean: {', '.join(suggestions)}?"
-                
+
                 return {
                     "success": False,
                     "error": error_msg,

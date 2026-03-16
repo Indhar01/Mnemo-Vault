@@ -527,8 +527,9 @@ class MemoGraphMCPServer:
         """
         try:
             import re
-            import yaml
             from datetime import datetime, timezone
+
+            import yaml
 
             # Find the memory file
             memory_path = None
@@ -584,7 +585,9 @@ class MemoGraphMCPServer:
                 body = f"{body}\n\n{tags_line}"
 
             # Write back
-            new_frontmatter = "---\n" + yaml.safe_dump(frontmatter, sort_keys=False).strip() + "\n---\n\n"
+            new_frontmatter = (
+                "---\n" + yaml.safe_dump(frontmatter, sort_keys=False).strip() + "\n---\n\n"
+            )
             memory_path.write_text(new_frontmatter + body + "\n", encoding="utf-8")
 
             logger.info(f"Updated memory: {memory_id}")
@@ -611,11 +614,13 @@ class MemoGraphMCPServer:
         try:
             tools_info = []
             for tool in self.get_tools_schema():
-                tools_info.append({
-                    "name": tool["name"],
-                    "description": tool["description"],
-                    "required_params": tool["inputSchema"].get("required", []),
-                })
+                tools_info.append(
+                    {
+                        "name": tool["name"],
+                        "description": tool["description"],
+                        "required_params": tool["inputSchema"].get("required", []),
+                    }
+                )
 
             return {
                 "success": True,
