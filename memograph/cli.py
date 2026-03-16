@@ -338,9 +338,7 @@ def _save_conversation_combined(
         first_a = conversation_history[0]["answer"]
 
         if auto_title:
-            title = _generate_conversation_title(
-                first_q, first_a, provider, model, base_url
-            )
+            title = _generate_conversation_title(first_q, first_a, provider, model, base_url)
         else:
             title = first_q[:50] + ("..." if len(first_q) > 50 else "")
 
@@ -562,9 +560,7 @@ def main():
         "--vault-path", default=None, help="Default vault path for setup (optional)"
     )
 
-    subparsers.add_parser(
-        "verify-mcp", help="Verify MCP setup and configuration"
-    )
+    subparsers.add_parser("verify-mcp", help="Verify MCP setup and configuration")
 
     args = parser.parse_args()
     kernel = MemoryKernel(args.vault)

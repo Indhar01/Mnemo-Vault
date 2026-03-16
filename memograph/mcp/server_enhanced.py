@@ -5,15 +5,13 @@ These tools provide advanced CRUD, analytics, and maintenance capabilities.
 """
 
 import logging
-import shutil
-import yaml
 from datetime import datetime, timezone
 from difflib import SequenceMatcher
-from pathlib import Path
 from typing import Any, Optional
 
+import yaml
+
 from ..core.enums import MemoryType
-from ..core.kernel import MemoryKernel
 
 logger = logging.getLogger(__name__)
 
@@ -36,11 +34,13 @@ class EnhancedMCPTools:
         try:
             tools_info = []
             for tool in self.server.get_tools_schema():
-                tools_info.append({
-                    "name": tool["name"],
-                    "description": tool["description"],
-                    "required_params": tool["inputSchema"].get("required", []),
-                })
+                tools_info.append(
+                    {
+                        "name": tool["name"],
+                        "description": tool["description"],
+                        "required_params": tool["inputSchema"].get("required", []),
+                    }
+                )
 
             return {
                 "success": True,
@@ -53,7 +53,12 @@ class EnhancedMCPTools:
                     "update": ["update_memory"],
                     "delete": ["delete_memory", "bulk_delete_memories"],
                     "analytics": ["get_vault_stats", "get_vault_analytics", "get_tag_statistics"],
-                    "maintenance": ["reindex_vault", "validate_vault", "export_memories", "backup_vault"],
+                    "maintenance": [
+                        "reindex_vault",
+                        "validate_vault",
+                        "export_memories",
+                        "backup_vault",
+                    ],
                 },
             }
         except Exception as e:
@@ -204,7 +209,9 @@ class EnhancedMCPTools:
                 body = f"{body}\n\n{tags_line}"
 
             # Write back
-            new_frontmatter = "---\n" + yaml.safe_dump(frontmatter, sort_keys=False).strip() + "\n---\n\n"
+            new_frontmatter = (
+                "---\n" + yaml.safe_dump(frontmatter, sort_keys=False).strip() + "\n---\n\n"
+            )
             memory_path.write_text(new_frontmatter + body + "\n", encoding="utf-8")
 
             logger.info(f"Updated memory: {memory_id}")
@@ -242,7 +249,10 @@ class EnhancedMCPTools:
                 "created": len(paths),
                 "failed": len(errors),
                 "paths": paths,
-                "errors": [{"memory": err[0].get("title", "unknown"), "error": str(err[1])} for err in errors],
+                "errors": [
+                    {"memory": err[0].get("title", "unknown"), "error": str(err[1])}
+                    for err in errors
+                ],
             }
 
         except Exception as e:
@@ -302,7 +312,9 @@ class EnhancedMCPTools:
                     if result["success"]:
                         deleted.append(node.id)
                     else:
-                        errors.append({"memory_id": node.id, "error": result.get("error", "Unknown error")})
+                        errors.append(
+                            {"memory_id": node.id, "error": result.get("error", "Unknown error")}
+                        )
                 except Exception as e:
                     errors.append({"memory_id": node.id, "error": str(e)})
 
@@ -359,21 +371,23 @@ class EnhancedMCPTools:
             most_connected = sorted(
                 [(n.id, n.title, len(n.links) + len(n.backlinks)) for n in nodes],
                 key=lambda x: x[2],
-                reverse=True
+                reverse=True,
             )[:10]
 
             # Most important memories (by salience)
             most_important = sorted(
-                [(n.id, n.title, n.salience) for n in nodes],
-                key=lambda x: x[2],
-                reverse=True
+                [(n.id, n.title, n.salience) for n in nodes], key=lambda x: x[2], reverse=True
             )[:10]
 
             # Recent activity
             recent = sorted(
-                [(n.id, n.title, n.created_at.isoformat() if n.created_at else "") for n in nodes if n.created_at],
+                [
+                    (n.id, n.title, n.created_at.isoformat() if n.created_at else "")
+                    for n in nodes
+                    if n.created_at
+                ],
                 key=lambda x: x[2],
-                reverse=True
+                reverse=True,
             )[:10]
 
             return {
@@ -382,9 +396,15 @@ class EnhancedMCPTools:
                 "average_salience": round(avg_salience, 3),
                 "type_distribution": type_counts,
                 "top_tags": sorted(tag_counts.items(), key=lambda x: x[1], reverse=True)[:20],
-                "most_connected": [{"id": m[0], "title": m[1], "connections": m[2]} for m in most_connected],
-                "most_important": [{"id": m[0], "title": m[1], "salience": m[2]} for m in most_important],
-                "recent_memories": [{"id": m[0], "title": m[1], "created_at": m[2]} for m in recent],
+                "most_connected": [
+                    {"id": m[0], "title": m[1], "connections": m[2]} for m in most_connected
+                ],
+                "most_important": [
+                    {"id": m[0], "title": m[1], "salience": m[2]} for m in most_important
+                ],
+                "recent_memories": [
+                    {"id": m[0], "title": m[1], "created_at": m[2]} for m in recent
+                ],
             }
 
         except Exception as e:
@@ -417,23 +437,27 @@ class EnhancedMCPTools:
             for link_id in node.links:
                 link_node = self.kernel.graph.get(link_id)
                 if link_node:
-                    outgoing.append({
-                        "id": link_node.id,
-                        "title": link_node.title,
-                        "memory_type": link_node.memory_type.value,
-                        "tags": link_node.tags,
-                    })
+                    outgoing.append(
+                        {
+                            "id": link_node.id,
+                            "title": link_node.title,
+                            "memory_type": link_node.memory_type.value,
+                            "tags": link_node.tags,
+                        }
+                    )
 
             incoming = []
             for link_id in node.backlinks:
                 link_node = self.kernel.graph.get(link_id)
                 if link_node:
-                    incoming.append({
-                        "id": link_node.id,
-                        "title": link_node.title,
-                        "memory_type": link_node.memory_type.value,
-                        "tags": link_node.tags,
-                    })
+                    incoming.append(
+                        {
+                            "id": link_node.id,
+                            "title": link_node.title,
+                            "memory_type": link_node.memory_type.value,
+                            "tags": link_node.tags,
+                        }
+                    )
 
             return {
                 "success": True,
