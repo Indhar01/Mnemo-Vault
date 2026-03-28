@@ -355,7 +355,9 @@ class TestGraphStats:
 
         stats = graph.get_stats()
         assert stats.avg_degree > 0
-        assert stats.max_degree >= 2  # python-tips and ml-basics have 2 connections each
+        assert (
+            stats.max_degree >= 2
+        )  # python-tips and ml-basics have 2 connections each
 
 
 class TestIndexMaintenance:

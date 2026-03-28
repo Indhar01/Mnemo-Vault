@@ -31,7 +31,9 @@ def set_action_logger(logger: ActionLogger):
 
 @router.get("")
 async def get_actions(
-    limit: int = Query(100, ge=1, le=1000, description="Maximum number of actions to return"),
+    limit: int = Query(
+        100, ge=1, le=1000, description="Maximum number of actions to return"
+    ),
     action_type: ActionType | None = Query(None, description="Filter by action type"),
     memory_id: str | None = Query(None, description="Filter by memory ID"),
     grouped: bool = Query(False, description="Group consecutive actions"),
@@ -118,7 +120,8 @@ async def clear_action_history(
             return {"message": f"Cleared actions before {before_date}"}
         except ValueError:
             raise HTTPException(
-                status_code=400, detail="Invalid date format. Use ISO format (YYYY-MM-DDTHH:MM:SS)"
+                status_code=400,
+                detail="Invalid date format. Use ISO format (YYYY-MM-DDTHH:MM:SS)",
             )
     else:
         action_logger.clear_history()

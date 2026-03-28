@@ -160,7 +160,9 @@ def create_app(vault_path: str, use_gam: bool = True) -> FastAPI:
     return app
 
 
-def run_dev_server(vault_path: str, host: str = "0.0.0.0", port: int = 8000, use_gam: bool = True):
+def run_dev_server(
+    vault_path: str, host: str = "0.0.0.0", port: int = 8000, use_gam: bool = True
+):
     """
     Run the development server.
 

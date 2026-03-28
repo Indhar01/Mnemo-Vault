@@ -31,7 +31,9 @@ def temp_vault(tmp_path):
 @pytest.fixture
 async def async_kernel(temp_vault):
     """Create an async kernel."""
-    kernel = AsyncMemoryKernel(vault_path=str(temp_vault), enable_cache=True, max_concurrent=10)
+    kernel = AsyncMemoryKernel(
+        vault_path=str(temp_vault), enable_cache=True, max_concurrent=10
+    )
     return kernel
 
 
@@ -186,12 +188,12 @@ class TestAsyncRetrieve:
         # First query (cache miss)
         start = time.time()
         results1 = await populated_async_kernel.retrieve_nodes_async(query)
-        time1 = time.time() - start
+        time.time() - start
 
         # Second query (cache hit)
         start = time.time()
         results2 = await populated_async_kernel.retrieve_nodes_async(query)
-        time2 = time.time() - start
+        time.time() - start
 
         # Results should be identical
         assert len(results1) == len(results2)
@@ -241,7 +243,11 @@ class TestBatchOperations:
     async def test_remember_batch_async_basic(self, async_kernel):
         """Test basic batch memory creation."""
         memories = [
-            {"title": f"Memory {i}", "content": f"Content for memory {i}", "tags": [f"tag{i % 3}"]}
+            {
+                "title": f"Memory {i}",
+                "content": f"Content for memory {i}",
+                "tags": [f"tag{i % 3}"],
+            }
             for i in range(20)
         ]
 
@@ -292,7 +298,9 @@ class TestContextWindow:
     @pytest.mark.asyncio
     async def test_context_window_async(self, populated_async_kernel):
         """Test async context window generation."""
-        context = await populated_async_kernel.context_window_async("python tips", token_limit=1024)
+        context = await populated_async_kernel.context_window_async(
+            "python tips", token_limit=1024
+        )
 
         assert isinstance(context, str)
         assert len(context) > 0
@@ -340,7 +348,9 @@ class TestErrorHandling:
     @pytest.mark.asyncio
     async def test_concurrent_error_handling(self, async_kernel):
         """Test error handling with concurrent operations."""
-        tasks = [async_kernel.remember_async(f"Memory {i}", f"Content {i}") for i in range(5)]
+        tasks = [
+            async_kernel.remember_async(f"Memory {i}", f"Content {i}") for i in range(5)
+        ]
 
         # Add a failing task
         tasks.append(async_kernel.remember_async("", "Content"))
@@ -357,7 +367,8 @@ class TestPerformance:
     async def test_concurrent_vs_sequential(self, async_kernel):
         """Compare concurrent vs sequential performance."""
         memories = [
-            {"title": f"Memory {i}", "content": f"Content {i}", "tags": ["perf"]} for i in range(10)
+            {"title": f"Memory {i}", "content": f"Content {i}", "tags": ["perf"]}
+            for i in range(10)
         ]
 
         # Concurrent

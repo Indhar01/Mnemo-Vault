@@ -81,7 +81,9 @@ class TestLargeVaultPerformance:
                 "content": f"Detailed information about {topic}. " * 30,
                 "tags": [topic, f"category{i % 10}"],
             }
-            for i, topic in enumerate(["python", "docker", "kubernetes", "fastapi", "react"] * 200)
+            for i, topic in enumerate(
+                ["python", "docker", "kubernetes", "fastapi", "react"] * 200
+            )
         ]
 
         await kernel.remember_batch_async(memories, show_progress=True)
@@ -109,7 +111,9 @@ class TestLargeVaultPerformance:
 
         # Test concurrent queries
         start_time = time.time()
-        results = await asyncio.gather(*[kernel.retrieve_nodes_async(q, top_k=5) for q in queries])
+        results = await asyncio.gather(
+            *[kernel.retrieve_nodes_async(q, top_k=5) for q in queries]
+        )
         concurrent_time = time.time() - start_time
 
         assert len(results) == len(queries)
@@ -182,7 +186,9 @@ class TestConcurrentOperations:
         queries = [f"topic {i % 5}" for i in range(50)]
 
         start_time = time.time()
-        results = await asyncio.gather(*[kernel.retrieve_nodes_async(q, top_k=5) for q in queries])
+        results = await asyncio.gather(
+            *[kernel.retrieve_nodes_async(q, top_k=5) for q in queries]
+        )
         duration = time.time() - start_time
 
         assert len(results) == 50
@@ -206,7 +212,11 @@ class TestConcurrentOperations:
 
         # Create initial data
         initial_memories = [
-            {"title": f"Initial {i}", "content": f"Initial content {i}", "tags": ["initial"]}
+            {
+                "title": f"Initial {i}",
+                "content": f"Initial content {i}",
+                "tags": ["initial"],
+            }
             for i in range(50)
         ]
         await kernel.remember_batch_async(initial_memories)
@@ -219,12 +229,16 @@ class TestConcurrentOperations:
             # Add writes
             for i in range(20):
                 operations.append(
-                    kernel.remember_async(f"New Memory {i}", f"New content {i}", tags=["new"])
+                    kernel.remember_async(
+                        f"New Memory {i}", f"New content {i}", tags=["new"]
+                    )
                 )
 
             # Add reads
             for i in range(30):
-                operations.append(kernel.retrieve_nodes_async(f"content {i % 10}", top_k=5))
+                operations.append(
+                    kernel.retrieve_nodes_async(f"content {i % 10}", top_k=5)
+                )
 
             return await asyncio.gather(*operations)
 
@@ -281,7 +295,10 @@ class TestMemoryUsage:
 
             # Perform queries
             await asyncio.gather(
-                *[kernel.retrieve_nodes_async(f"batch {batch}", top_k=10) for _ in range(10)]
+                *[
+                    kernel.retrieve_nodes_async(f"batch {batch}", top_k=10)
+                    for _ in range(10)
+                ]
             )
 
             current_memory = process.memory_info().rss / 1024 / 1024

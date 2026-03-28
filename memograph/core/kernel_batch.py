@@ -137,7 +137,9 @@ class BatchMemoryKernel(AsyncMemoryKernel):
                 with Progress() as progress:
                     task = progress.add_task("[cyan]Retrieving...", total=len(queries))
 
-                    async def retrieve_with_progress(q: str) -> tuple[str, list[MemoryNode]]:
+                    async def retrieve_with_progress(
+                        q: str,
+                    ) -> tuple[str, list[MemoryNode]]:
                         nodes = await self.retrieve_nodes_async(
                             q, tags=tags, depth=depth, top_k=top_k, **kwargs
                         )
@@ -150,11 +152,17 @@ class BatchMemoryKernel(AsyncMemoryKernel):
             except ImportError:
                 # Fallback without progress
                 results_list = await asyncio.gather(
-                    *[self._retrieve_with_query(q, tags, depth, top_k, **kwargs) for q in queries]
+                    *[
+                        self._retrieve_with_query(q, tags, depth, top_k, **kwargs)
+                        for q in queries
+                    ]
                 )
         else:
             results_list = await asyncio.gather(
-                *[self._retrieve_with_query(q, tags, depth, top_k, **kwargs) for q in queries]
+                *[
+                    self._retrieve_with_query(q, tags, depth, top_k, **kwargs)
+                    for q in queries
+                ]
             )
 
         # Convert to dictionary
@@ -252,12 +260,18 @@ class BatchMemoryKernel(AsyncMemoryKernel):
                         progress.update(task, advance=1)
                         return memory_id
 
-                    updated_ids = await asyncio.gather(*[update_with_progress(u) for u in updates])
+                    updated_ids = await asyncio.gather(
+                        *[update_with_progress(u) for u in updates]
+                    )
             except ImportError:
                 # Fallback without progress
-                updated_ids = await asyncio.gather(*[self._update_single_async(u) for u in updates])
+                updated_ids = await asyncio.gather(
+                    *[self._update_single_async(u) for u in updates]
+                )
         else:
-            updated_ids = await asyncio.gather(*[self._update_single_async(u) for u in updates])
+            updated_ids = await asyncio.gather(
+                *[self._update_single_async(u) for u in updates]
+            )
 
         # Re-ingest after updates
         await self.ingest_async(force=True, show_progress=False)
@@ -305,7 +319,9 @@ class BatchMemoryKernel(AsyncMemoryKernel):
                 body = update["content"]
 
             # Write updated content
-            new_content = f"---\n{yaml.dump(frontmatter, default_flow_style=False)}---\n{body}"
+            new_content = (
+                f"---\n{yaml.dump(frontmatter, default_flow_style=False)}---\n{body}"
+            )
             await asyncio.to_thread(file_path.write_text, new_content, encoding="utf-8")
 
             logger.debug(f"Updated memory: {memory_id}")
@@ -434,7 +450,7 @@ class BatchMemoryKernel(AsyncMemoryKernel):
             intersection_ids = {node.id for node in results[first_query]}
 
             # Intersect with remaining sets
-            for query, nodes in list(results.items())[1:]:
+            for _query, nodes in list(results.items())[1:]:
                 intersection_ids &= {node.id for node in nodes}
 
             # Return nodes in intersection
@@ -466,7 +482,10 @@ async def create_batch_kernel(
         ...     return kernel
     """
     kernel = BatchMemoryKernel(
-        vault_path=vault_path, enable_cache=enable_cache, max_concurrent=max_concurrent, **kwargs
+        vault_path=vault_path,
+        enable_cache=enable_cache,
+        max_concurrent=max_concurrent,
+        **kwargs,
     )
     await kernel.ingest_async()
     return kernel

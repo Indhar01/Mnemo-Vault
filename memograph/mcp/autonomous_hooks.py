@@ -73,7 +73,9 @@ class AutonomousHooks:
             sources = []
 
             # Determine if we should search
-            should_search = auto_search if auto_search is not None else self.auto_search_enabled
+            should_search = (
+                auto_search if auto_search is not None else self.auto_search_enabled
+            )
 
             if should_search:
                 # Search vault for relevant context
@@ -98,13 +100,19 @@ class AutonomousHooks:
                     ]
 
                     actions.append("searched_vault")
-                    logger.info(f"Auto-searched vault for query, found {len(sources)} sources")
+                    logger.info(
+                        f"Auto-searched vault for query, found {len(sources)} sources"
+                    )
 
                 except Exception as e:
                     logger.warning(f"Auto-search failed: {e}")
 
             # Determine if we should save query
-            should_save = auto_save_query if auto_save_query is not None else self.auto_save_queries
+            should_save = (
+                auto_save_query
+                if auto_save_query is not None
+                else self.auto_save_queries
+            )
 
             if should_save:
                 # Save the query as a memory
@@ -171,7 +179,9 @@ class AutonomousHooks:
         """
         try:
             # Determine if we should save
-            should_save = auto_save if auto_save is not None else self.auto_save_responses
+            should_save = (
+                auto_save if auto_save is not None else self.auto_save_responses
+            )
 
             if not should_save:
                 return {
@@ -190,9 +200,7 @@ class AutonomousHooks:
             if sources_used:
                 content += "**Sources Used**\n\n"
                 for source in sources_used:
-                    content += (
-                        f"- [[{source.get('id', 'unknown')}]] {source.get('title', 'Untitled')}\n"
-                    )
+                    content += f"- [[{source.get('id', 'unknown')}]] {source.get('title', 'Untitled')}\n"
                 content += "\n"
 
             if conversation_id:

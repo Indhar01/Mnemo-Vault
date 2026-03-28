@@ -106,8 +106,12 @@ class EnhancedVaultGraph(VaultGraph):
 
         # Primary indexes
         self._node_index: dict[str, MemoryNode] = {}  # id -> node
-        self._tag_index: dict[str, set[str]] = defaultdict(set)  # tag -> set of node IDs
-        self._type_index: dict[MemoryType, set[str]] = defaultdict(set)  # type -> set of node IDs
+        self._tag_index: dict[str, set[str]] = defaultdict(
+            set
+        )  # tag -> set of node IDs
+        self._type_index: dict[MemoryType, set[str]] = defaultdict(
+            set
+        )  # type -> set of node IDs
         self._backlink_index: dict[str, set[str]] = defaultdict(
             set
         )  # target_id -> set of source IDs
@@ -237,7 +241,9 @@ class EnhancedVaultGraph(VaultGraph):
             for tag in tags:
                 matching_ids.update(self._tag_index.get(tag, set()))
 
-        return [self._node_index[nid] for nid in matching_ids if nid in self._node_index]
+        return [
+            self._node_index[nid] for nid in matching_ids if nid in self._node_index
+        ]
 
     def get_by_type(self, memory_type: MemoryType) -> list[MemoryNode]:
         """Get all nodes of a specific type (O(1) lookup).
@@ -285,7 +291,10 @@ class EnhancedVaultGraph(VaultGraph):
         Returns:
             Dictionary mapping type to node count
         """
-        return {mem_type.value: len(node_ids) for mem_type, node_ids in self._type_index.items()}
+        return {
+            mem_type.value: len(node_ids)
+            for mem_type, node_ids in self._type_index.items()
+        }
 
     def all_nodes(self) -> Iterator[MemoryNode]:
         """Iterate over all nodes efficiently.
@@ -448,7 +457,9 @@ class EnhancedVaultGraph(VaultGraph):
                 source = self._node_index.get(sid)
                 if not source or target_id not in source.links:
                     results["backlink_index"] = False
-                    logger.warning(f"Backlink index inconsistency: {target_id} <- {sid}")
+                    logger.warning(
+                        f"Backlink index inconsistency: {target_id} <- {sid}"
+                    )
                     break
 
         return results

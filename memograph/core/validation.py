@@ -155,7 +155,11 @@ def validate_query(
         raise ValidationError(
             f"Query too long: {len(query)} characters (maximum: {max_length})",
             suggestion=f"Shorten your query to {max_length} characters or less",
-            context={"query": query[:100] + "...", "length": len(query), "max_length": max_length},
+            context={
+                "query": query[:100] + "...",
+                "length": len(query),
+                "max_length": max_length,
+            },
         )
 
     logger.debug(f"Validated query: {query}")
@@ -250,17 +254,20 @@ def validate_path(
             )
 
     # Extension check
-    if allowed_extensions and path.suffix:
-        if path.suffix.lower() not in [ext.lower() for ext in allowed_extensions]:
-            raise ValidationError(
-                f"Invalid file extension: {path.suffix}",
-                suggestion=f"Use one of these extensions: {', '.join(allowed_extensions)}",
-                context={
-                    "path": str(path),
-                    "extension": path.suffix,
-                    "allowed": allowed_extensions,
-                },
-            )
+    if (
+        allowed_extensions
+        and path.suffix
+        and path.suffix.lower() not in [ext.lower() for ext in allowed_extensions]
+    ):
+        raise ValidationError(
+            f"Invalid file extension: {path.suffix}",
+            suggestion=f"Use one of these extensions: {', '.join(allowed_extensions)}",
+            context={
+                "path": str(path),
+                "extension": path.suffix,
+                "allowed": allowed_extensions,
+            },
+        )
 
     logger.debug(f"Validated path: {path}")
     return path

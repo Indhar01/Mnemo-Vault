@@ -48,7 +48,9 @@ class TestSustainedLoad:
                 )
 
                 if operation_count % 10 == 0:
-                    await kernel.retrieve_nodes_async(f"content {operation_count % 100}", top_k=5)
+                    await kernel.retrieve_nodes_async(
+                        f"content {operation_count % 100}", top_k=5
+                    )
 
                 operation_count += 1
 
@@ -67,8 +69,12 @@ class TestSustainedLoad:
         duration = time.time() - start_time
         success_rate = (operation_count - error_count) / operation_count * 100
 
-        logger.info(f"Completed: {operation_count} operations in {duration / 60:.1f}min")
-        logger.info(f"Error rate: {error_count}/{operation_count} ({100 - success_rate:.2f}%)")
+        logger.info(
+            f"Completed: {operation_count} operations in {duration / 60:.1f}min"
+        )
+        logger.info(
+            f"Error rate: {error_count}/{operation_count} ({100 - success_rate:.2f}%)"
+        )
 
         assert success_rate > 99.5, f"Success rate too low: {success_rate:.2f}%"
 
@@ -138,7 +144,9 @@ class TestSpikeLoad:
         # Baseline: Low load
         logger.info("Baseline phase: low load")
         baseline_ops = [
-            kernel.remember_async(f"Baseline {i}", f"Content {i}" * 10, tags=["baseline"])
+            kernel.remember_async(
+                f"Baseline {i}", f"Content {i}" * 10, tags=["baseline"]
+            )
             for i in range(10)
         ]
 
@@ -164,7 +172,9 @@ class TestSpikeLoad:
         # Recovery: Return to low load
         logger.info("Recovery phase: low load")
         recovery_ops = [
-            kernel.remember_async(f"Recovery {i}", f"Content {i}" * 10, tags=["recovery"])
+            kernel.remember_async(
+                f"Recovery {i}", f"Content {i}" * 10, tags=["recovery"]
+            )
             for i in range(10)
         ]
 
@@ -187,7 +197,9 @@ class TestSpikeLoad:
         vault = tmp_path / "query_spike_vault"
         vault.mkdir()
 
-        kernel = await create_gam_async_kernel(vault_path=str(vault), max_concurrent=100)
+        kernel = await create_gam_async_kernel(
+            vault_path=str(vault), max_concurrent=100
+        )
 
         # Create test data
         memories = [
@@ -204,7 +216,9 @@ class TestSpikeLoad:
         # Baseline queries
         baseline_queries = [f"topic {i}" for i in range(5)]
         start = time.time()
-        await asyncio.gather(*[kernel.retrieve_nodes_async(q, top_k=5) for q in baseline_queries])
+        await asyncio.gather(
+            *[kernel.retrieve_nodes_async(q, top_k=5) for q in baseline_queries]
+        )
         baseline_time = time.time() - start
 
         logger.info(f"Baseline: 5 queries in {baseline_time * 1000:.2f}ms")
@@ -240,7 +254,9 @@ class TestGradualRampUp:
         vault = tmp_path / "rampup_vault"
         vault.mkdir()
 
-        kernel = await create_gam_async_kernel(vault_path=str(vault), max_concurrent=100)
+        kernel = await create_gam_async_kernel(
+            vault_path=str(vault), max_concurrent=100
+        )
 
         load_levels = [10, 25, 50, 100, 200]
         times = []
@@ -312,7 +328,9 @@ class TestMixedWorkload:
         for i in range(20):
             operations.append(
                 kernel.remember_async(
-                    f"New Document {i}", f"New content {i}" * 20, tags=["new", f"topic{i % 10}"]
+                    f"New Document {i}",
+                    f"New content {i}" * 20,
+                    tags=["new", f"topic{i % 10}"],
                 )
             )
 

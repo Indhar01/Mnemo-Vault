@@ -42,7 +42,11 @@ class MCPSetup:
         claude_config = self._get_claude_config_path()
         if claude_config:
             clients.append(
-                MCPClient("Claude Desktop", claude_config, detected=claude_config.parent.exists())
+                MCPClient(
+                    "Claude Desktop",
+                    claude_config,
+                    detected=claude_config.parent.exists(),
+                )
             )
 
         # Detect Cline CLI
@@ -52,7 +56,8 @@ class MCPSetup:
                 MCPClient(
                     "Cline CLI",
                     cline_config,
-                    detected=cline_config.parent.exists() or self._check_cline_installed(),
+                    detected=cline_config.parent.exists()
+                    or self._check_cline_installed(),
                 )
             )
 
@@ -61,7 +66,9 @@ class MCPSetup:
         if vscode_cline:
             clients.append(
                 MCPClient(
-                    "VS Code Cline Extension", vscode_cline, detected=vscode_cline.parent.exists()
+                    "VS Code Cline Extension",
+                    vscode_cline,
+                    detected=vscode_cline.parent.exists(),
                 )
             )
 
@@ -71,7 +78,10 @@ class MCPSetup:
     def _get_claude_config_path(self) -> Path | None:
         """Get Claude Desktop config path based on OS."""
         if self.system == "Darwin":  # macOS
-            return Path.home() / "Library/Application Support/Claude/claude_desktop_config.json"
+            return (
+                Path.home()
+                / "Library/Application Support/Claude/claude_desktop_config.json"
+            )
         elif self.system == "Windows":
             appdata = os.environ.get("APPDATA")
             if appdata:
@@ -115,7 +125,9 @@ class MCPSetup:
     def _check_cline_installed(self) -> bool:
         """Check if Cline CLI is installed."""
         try:
-            result = subprocess.run(["cline", "--version"], capture_output=True, timeout=2)
+            result = subprocess.run(
+                ["cline", "--version"], capture_output=True, timeout=2
+            )
             return result.returncode == 0
         except (subprocess.TimeoutExpired, FileNotFoundError):
             return False
@@ -177,7 +189,9 @@ class MCPSetup:
 
         # Get vault path
         print("\n📁 Vault Configuration")
-        default_vault = self.vault_path or str(Path.home() / "Documents/memograph-vault")
+        default_vault = self.vault_path or str(
+            Path.home() / "Documents/memograph-vault"
+        )
         vault_input = input(f"Vault path (default: {default_vault}): ").strip()
         vault_path = Path(vault_input if vault_input else default_vault)
 
@@ -298,7 +312,9 @@ class MCPSetup:
             }
 
             if model:
-                cline_config["mcp"]["servers"]["memograph"]["env"]["MEMOGRAPH_MODEL"] = model
+                cline_config["mcp"]["servers"]["memograph"]["env"][
+                    "MEMOGRAPH_MODEL"
+                ] = model
 
             self._write_config(client.config_path, cline_config, merge=False)
 
@@ -318,11 +334,15 @@ class MCPSetup:
             }
 
             if model:
-                vscode_setting["cline.mcpServers"]["memograph"]["env"]["MEMOGRAPH_MODEL"] = model
+                vscode_setting["cline.mcpServers"]["memograph"]["env"][
+                    "MEMOGRAPH_MODEL"
+                ] = model
 
             self._write_config(client.config_path, vscode_setting, merge=True)
 
-    def _write_config(self, path: Path, config: dict[str, Any], merge: bool = True) -> None:
+    def _write_config(
+        self, path: Path, config: dict[str, Any], merge: bool = True
+    ) -> None:
         """Write configuration to file."""
         # Create parent directory if needed
         path.parent.mkdir(parents=True, exist_ok=True)
@@ -351,7 +371,11 @@ class MCPSetup:
     def _deep_merge(self, target: dict, source: dict) -> None:
         """Deep merge source into target dictionary."""
         for key, value in source.items():
-            if key in target and isinstance(target[key], dict) and isinstance(value, dict):
+            if (
+                key in target
+                and isinstance(target[key], dict)
+                and isinstance(value, dict)
+            ):
                 self._deep_merge(target[key], value)
             else:
                 target[key] = value
@@ -428,7 +452,9 @@ class MCPSetup:
                     if "Claude" in client.name:
                         configured = "memograph" in config.get("mcpServers", {})
                     elif "Cline" in client.name:
-                        configured = "memograph" in config.get("mcp", {}).get("servers", {})
+                        configured = "memograph" in config.get("mcp", {}).get(
+                            "servers", {}
+                        )
                     elif "VS Code" in client.name:
                         configured = "memograph" in config.get("cline.mcpServers", {})
 

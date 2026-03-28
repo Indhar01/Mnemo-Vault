@@ -30,7 +30,9 @@ class TestAsyncVsSyncBenchmarks:
         # Setup async kernel
         async_vault = tmp_path / "async_vault"
         async_vault.mkdir()
-        async_kernel = await create_gam_async_kernel(vault_path=str(async_vault), max_concurrent=20)
+        async_kernel = await create_gam_async_kernel(
+            vault_path=str(async_vault), max_concurrent=20
+        )
 
         # Setup sync kernel
         sync_vault = tmp_path / "sync_vault"
@@ -101,7 +103,9 @@ class TestAsyncVsSyncBenchmarks:
 
         # Concurrent benchmark
         start = time.time()
-        await asyncio.gather(*[kernel.retrieve_nodes_async(q, top_k=5) for q in queries])
+        await asyncio.gather(
+            *[kernel.retrieve_nodes_async(q, top_k=5) for q in queries]
+        )
         concurrent_time = time.time() - start
 
         speedup = sequential_time / concurrent_time
@@ -129,7 +133,11 @@ class TestBatchOperationBenchmarks:
         kernel = await create_gam_async_kernel(vault_path=str(vault), max_concurrent=20)
 
         memories = [
-            {"title": f"Memory {i}", "content": f"Content {i}" * 15, "tags": [f"tag{i % 3}"]}
+            {
+                "title": f"Memory {i}",
+                "content": f"Content {i}" * 15,
+                "tags": [f"tag{i % 3}"],
+            }
             for i in range(100)
         ]
 
@@ -141,7 +149,9 @@ class TestBatchOperationBenchmarks:
         # Individual operations
         vault2 = tmp_path / "individual_vault"
         vault2.mkdir()
-        kernel2 = await create_gam_async_kernel(vault_path=str(vault2), max_concurrent=20)
+        kernel2 = await create_gam_async_kernel(
+            vault_path=str(vault2), max_concurrent=20
+        )
 
         start = time.time()
         for mem in memories:
@@ -152,14 +162,20 @@ class TestBatchOperationBenchmarks:
         throughput_individual = len(memories) / individual_time
 
         logger.info(f"Batch: {batch_time:.2f}s ({throughput_batch:.1f} ops/s)")
-        logger.info(f"Individual: {individual_time:.2f}s ({throughput_individual:.1f} ops/s)")
+        logger.info(
+            f"Individual: {individual_time:.2f}s ({throughput_individual:.1f} ops/s)"
+        )
         logger.info(f"Speedup: {individual_time / batch_time:.2f}x")
 
         # Batch operations may not always be faster due to overhead
         # The real benefit is in reducing code complexity and better error handling
-        logger.info(f"Batch vs Individual ratio: {throughput_batch / throughput_individual:.2f}x")
+        logger.info(
+            f"Batch vs Individual ratio: {throughput_batch / throughput_individual:.2f}x"
+        )
         # Just ensure batch operations complete successfully
-        assert throughput_batch > 10, f"Batch throughput too low: {throughput_batch:.1f} ops/s"
+        assert throughput_batch > 10, (
+            f"Batch throughput too low: {throughput_batch:.1f} ops/s"
+        )
 
 
 @pytest.mark.stress
@@ -175,12 +191,16 @@ class TestGAMPerformanceBenchmarks:
         # GAM kernel
         gam_vault = tmp_path / "gam_vault"
         gam_vault.mkdir()
-        gam_kernel = await create_gam_async_kernel(vault_path=str(gam_vault), enable_gam=True)
+        gam_kernel = await create_gam_async_kernel(
+            vault_path=str(gam_vault), enable_gam=True
+        )
 
         # Standard kernel
         std_vault = tmp_path / "std_vault"
         std_vault.mkdir()
-        std_kernel = await create_gam_async_kernel(vault_path=str(std_vault), enable_gam=False)
+        std_kernel = await create_gam_async_kernel(
+            vault_path=str(std_vault), enable_gam=False
+        )
 
         # Create identical test data
         memories = [
@@ -189,7 +209,9 @@ class TestGAMPerformanceBenchmarks:
                 "content": f"Deep dive into {topic}" * 40,
                 "tags": [topic],
             }
-            for i, topic in enumerate(["python", "rust", "go", "javascript", "typescript"] * 20)
+            for i, topic in enumerate(
+                ["python", "rust", "go", "javascript", "typescript"] * 20
+            )
         ]
 
         await gam_kernel.remember_batch_async(memories, show_progress=False)
@@ -201,15 +223,21 @@ class TestGAMPerformanceBenchmarks:
 
         # Benchmark GAM
         start = time.time()
-        gam_results = await asyncio.gather(
-            *[gam_kernel.retrieve_nodes_async(q, use_gam=True, top_k=10) for q in queries]
+        await asyncio.gather(
+            *[
+                gam_kernel.retrieve_nodes_async(q, use_gam=True, top_k=10)
+                for q in queries
+            ]
         )
         gam_time = time.time() - start
 
         # Benchmark standard
         start = time.time()
-        std_results = await asyncio.gather(
-            *[std_kernel.retrieve_nodes_async(q, use_gam=False, top_k=10) for q in queries]
+        await asyncio.gather(
+            *[
+                std_kernel.retrieve_nodes_async(q, use_gam=False, top_k=10)
+                for q in queries
+            ]
         )
         std_time = time.time() - start
 
@@ -235,7 +263,9 @@ class TestCachePerformanceBenchmarks:
         vault.mkdir()
 
         # With cache
-        cached_kernel = await create_gam_async_kernel(vault_path=str(vault), enable_cache=True)
+        cached_kernel = await create_gam_async_kernel(
+            vault_path=str(vault), enable_cache=True
+        )
 
         memories = [
             {
@@ -290,7 +320,9 @@ class TestScalabilityBenchmarks:
             vault = tmp_path / f"scale_{size}_vault"
             vault.mkdir()
 
-            kernel = await create_gam_async_kernel(vault_path=str(vault), max_concurrent=20)
+            kernel = await create_gam_async_kernel(
+                vault_path=str(vault), max_concurrent=20
+            )
 
             memories = [
                 {

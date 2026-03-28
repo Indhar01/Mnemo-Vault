@@ -69,7 +69,11 @@ class OperationMetrics:
             return 0.0
         sorted_durations = sorted(self.recent_durations)
         idx = int(len(sorted_durations) * 0.95)
-        return sorted_durations[idx] if idx < len(sorted_durations) else sorted_durations[-1]
+        return (
+            sorted_durations[idx]
+            if idx < len(sorted_durations)
+            else sorted_durations[-1]
+        )
 
     @property
     def p99_duration_ms(self) -> float:
@@ -78,7 +82,11 @@ class OperationMetrics:
             return 0.0
         sorted_durations = sorted(self.recent_durations)
         idx = int(len(sorted_durations) * 0.99)
-        return sorted_durations[idx] if idx < len(sorted_durations) else sorted_durations[-1]
+        return (
+            sorted_durations[idx]
+            if idx < len(sorted_durations)
+            else sorted_durations[-1]
+        )
 
     @property
     def error_rate(self) -> float:
@@ -99,7 +107,9 @@ class OperationMetrics:
             "p99_duration_ms": self.p99_duration_ms,
             "error_count": self.error_count,
             "error_rate": self.error_rate,
-            "last_execution": self.last_execution.isoformat() if self.last_execution else None,
+            "last_execution": self.last_execution.isoformat()
+            if self.last_execution
+            else None,
         }
 
 
@@ -196,7 +206,9 @@ class MetricsCollector:
             return {
                 "total_operations": total_ops,
                 "total_errors": total_errors,
-                "error_rate": (total_errors / total_ops * 100) if total_ops > 0 else 0.0,
+                "error_rate": (total_errors / total_ops * 100)
+                if total_ops > 0
+                else 0.0,
                 "operations_count": len(self._operations),
                 "uptime_seconds": (datetime.now() - self._start_time).total_seconds(),
             }

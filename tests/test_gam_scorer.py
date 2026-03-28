@@ -284,10 +284,18 @@ class TestGraphDistance:
 
         # Create disconnected nodes
         node1 = MemoryNode(
-            id="node1", title="Node 1", content="Content", memory_type=MemoryType.FACT, salience=0.5
+            id="node1",
+            title="Node 1",
+            content="Content",
+            memory_type=MemoryType.FACT,
+            salience=0.5,
         )
         node2 = MemoryNode(
-            id="node2", title="Node 2", content="Content", memory_type=MemoryType.FACT, salience=0.5
+            id="node2",
+            title="Node 2",
+            content="Content",
+            memory_type=MemoryType.FACT,
+            salience=0.5,
         )
 
         graph.add_node(node1)

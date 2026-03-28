@@ -112,7 +112,9 @@ class TestPathValidation:
         test_file.touch()
 
         with pytest.raises(ValidationError) as exc_info:
-            validate_path(test_file, must_exist=True, allowed_extensions=[".md", ".markdown"])
+            validate_path(
+                test_file, must_exist=True, allowed_extensions=[".md", ".markdown"]
+            )
 
         assert "invalid file extension" in str(exc_info.value).lower()
 

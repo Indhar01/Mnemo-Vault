@@ -29,7 +29,10 @@ def temp_vault(tmp_path):
 async def gam_kernel(temp_vault):
     """Create a GAM kernel."""
     kernel = GAMAsyncKernel(
-        vault_path=str(temp_vault), enable_gam=True, enable_cache=True, max_concurrent=10
+        vault_path=str(temp_vault),
+        enable_gam=True,
+        enable_cache=True,
+        max_concurrent=10,
     )
     return kernel
 
@@ -91,7 +94,9 @@ class TestGAMInitialization:
             "salience_weight": 0.2,
         }
 
-        kernel = GAMAsyncKernel(vault_path=str(temp_vault), enable_gam=True, gam_config=config)
+        kernel = GAMAsyncKernel(
+            vault_path=str(temp_vault), enable_gam=True, gam_config=config
+        )
 
         assert kernel.gam_config == config
 
@@ -128,7 +133,9 @@ class TestGAMRetrieval:
     @pytest.mark.asyncio
     async def test_retrieve_without_gam(self, populated_gam_kernel):
         """Test standard retrieval when GAM is disabled."""
-        results = await populated_gam_kernel.retrieve_nodes_async("python", use_gam=False)
+        results = await populated_gam_kernel.retrieve_nodes_async(
+            "python", use_gam=False
+        )
 
         assert len(results) > 0
         assert any("python" in node.tags for node in results)
@@ -137,7 +144,9 @@ class TestGAMRetrieval:
     async def test_retrieve_default_uses_gam(self, populated_gam_kernel):
         """Test that default retrieval uses GAM when enabled."""
         # Should use GAM by default
-        results = await populated_gam_kernel.retrieve_nodes_async("python", tags=["python"])
+        results = await populated_gam_kernel.retrieve_nodes_async(
+            "python", tags=["python"]
+        )
 
         # GAM is enabled by default, just verify it returns a list
         assert isinstance(results, list)
@@ -146,8 +155,12 @@ class TestGAMRetrieval:
     async def test_gam_tracks_access(self, populated_gam_kernel):
         """Test that GAM tracks access patterns."""
         # Perform some retrievals with tags to ensure results
-        await populated_gam_kernel.retrieve_nodes_async("python", tags=["python"], use_gam=True)
-        await populated_gam_kernel.retrieve_nodes_async("docker", tags=["docker"], use_gam=True)
+        await populated_gam_kernel.retrieve_nodes_async(
+            "python", tags=["python"], use_gam=True
+        )
+        await populated_gam_kernel.retrieve_nodes_async(
+            "docker", tags=["docker"], use_gam=True
+        )
 
         # Check access tracking
         stats = await populated_gam_kernel.get_gam_stats_async()
@@ -204,7 +217,9 @@ class TestAccessTracking:
         """Test that access tracking works."""
         # Perform multiple retrievals with tags to ensure results
         for _ in range(3):
-            await populated_gam_kernel.retrieve_nodes_async("python", tags=["python"], use_gam=True)
+            await populated_gam_kernel.retrieve_nodes_async(
+                "python", tags=["python"], use_gam=True
+            )
 
         stats = await populated_gam_kernel.get_gam_stats_async()
 
@@ -258,7 +273,9 @@ class TestBackwardCompatibility:
         queries = ["python", "docker"]
 
         # Batch retrieval should work
-        results = await populated_gam_kernel.retrieve_batch_async(queries, show_progress=False)
+        results = await populated_gam_kernel.retrieve_batch_async(
+            queries, show_progress=False
+        )
 
         assert len(results) == 2
 
@@ -297,7 +314,9 @@ class TestGAMConfiguration:
             "salience_weight": 0.2,
         }
 
-        kernel = GAMAsyncKernel(vault_path=str(temp_vault), enable_gam=True, gam_config=config)
+        kernel = GAMAsyncKernel(
+            vault_path=str(temp_vault), enable_gam=True, gam_config=config
+        )
 
         stats = await kernel.get_gam_stats_async()
         assert stats["config"] == config
@@ -339,7 +358,9 @@ class TestPerformance:
         queries = ["python", "docker", "ml"] * 3  # 9 queries
 
         start = time.time()
-        tasks = [populated_gam_kernel.retrieve_nodes_async(q, use_gam=True) for q in queries]
+        tasks = [
+            populated_gam_kernel.retrieve_nodes_async(q, use_gam=True) for q in queries
+        ]
         results = await asyncio.gather(*tasks)
         duration = time.time() - start
 

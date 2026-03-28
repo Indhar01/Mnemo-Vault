@@ -105,10 +105,9 @@ class GAMAsyncKernel(BatchMemoryKernel):
             self.access_tracker = AccessTracker()
 
             # Create GAM config from provided config dict
-            if self.gam_config:
-                gam_config_obj = GAMConfig(**self.gam_config)
-            else:
-                gam_config_obj = GAMConfig()
+            gam_config_obj = (
+                GAMConfig(**self.gam_config) if self.gam_config else GAMConfig()
+            )
 
             self.gam_scorer = GAMScorer(config=gam_config_obj)
             self.gam_retriever = GAMRetriever(
@@ -202,7 +201,12 @@ class GAMAsyncKernel(BatchMemoryKernel):
         else:
             # Use standard retrieval
             return await super().retrieve_nodes_async(
-                query, tags=tags, depth=depth, top_k=top_k, use_cache=use_cache, **kwargs
+                query,
+                tags=tags,
+                depth=depth,
+                top_k=top_k,
+                use_cache=use_cache,
+                **kwargs,
             )
 
     async def retrieve_batch_async(
@@ -255,7 +259,9 @@ class GAMAsyncKernel(BatchMemoryKernel):
                     from rich.progress import Progress
 
                     with Progress() as progress:
-                        task = progress.add_task("[cyan]GAM Retrieving...", total=len(queries))
+                        task = progress.add_task(
+                            "[cyan]GAM Retrieving...", total=len(queries)
+                        )
 
                         async def retrieve_with_progress(q: str):
                             nodes = await self.retrieve_nodes_async(
@@ -269,11 +275,17 @@ class GAMAsyncKernel(BatchMemoryKernel):
                         )
                 except ImportError:
                     results_list = await asyncio.gather(
-                        *[self._retrieve_with_query_gam(q, tags, depth, top_k) for q in queries]
+                        *[
+                            self._retrieve_with_query_gam(q, tags, depth, top_k)
+                            for q in queries
+                        ]
                     )
             else:
                 results_list = await asyncio.gather(
-                    *[self._retrieve_with_query_gam(q, tags, depth, top_k) for q in queries]
+                    *[
+                        self._retrieve_with_query_gam(q, tags, depth, top_k)
+                        for q in queries
+                    ]
                 )
 
             results = dict(results_list)
@@ -346,12 +358,16 @@ class GAMAsyncKernel(BatchMemoryKernel):
                     TextColumn("[progress.percentage]{task.percentage:>3.0f}%"),
                     TextColumn("{task.completed}/{task.total}"),
                 ) as progress:
-                    task = progress.add_task("Creating memories...", total=len(memories))
+                    task = progress.add_task(
+                        "Creating memories...", total=len(memories)
+                    )
 
                     results = []
                     for i in range(0, len(memories), batch_size):
                         batch = memories[i : i + batch_size]
-                        batch_results = await asyncio.gather(*[create_memory(m) for m in batch])
+                        batch_results = await asyncio.gather(
+                            *[create_memory(m) for m in batch]
+                        )
                         results.extend(batch_results)
                         progress.update(task, advance=len(batch))
 

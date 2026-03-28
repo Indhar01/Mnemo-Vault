@@ -114,7 +114,10 @@ class TestRememberWithValidation:
     def test_remember_valid_inputs(self, enhanced_kernel):
         """Test remember with valid inputs."""
         path = enhanced_kernel.remember(
-            title="Test Memory", content="Test content", tags=["test", "example"], salience=0.8
+            title="Test Memory",
+            content="Test content",
+            tags=["test", "example"],
+            salience=0.8,
         )
 
         assert Path(path).exists()
@@ -339,7 +342,9 @@ class TestErrorHandling:
         # and path validation is called. During init, it may not raise immediately.
         import contextlib
 
-        with contextlib.suppress(ValidationError, MemoGraphError, FileNotFoundError, OSError):
+        with contextlib.suppress(
+            ValidationError, MemoGraphError, FileNotFoundError, OSError
+        ):
             EnhancedMemoryKernel(vault_path="/nonexistent/path", validate_inputs=False)
             # If it doesn't raise, that's acceptable - validation happens on use
 

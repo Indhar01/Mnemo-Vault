@@ -29,7 +29,9 @@ def temp_vault(tmp_path):
 @pytest.fixture
 async def batch_kernel(temp_vault):
     """Create a batch kernel."""
-    kernel = BatchMemoryKernel(vault_path=str(temp_vault), enable_cache=True, max_concurrent=10)
+    kernel = BatchMemoryKernel(
+        vault_path=str(temp_vault), enable_cache=True, max_concurrent=10
+    )
     return kernel
 
 
@@ -84,7 +86,9 @@ class TestBatchRetrieval:
         """Test basic batch retrieval."""
         queries = ["python", "docker", "git"]
 
-        results = await populated_batch_kernel.retrieve_batch_async(queries, show_progress=False)
+        results = await populated_batch_kernel.retrieve_batch_async(
+            queries, show_progress=False
+        )
 
         assert len(results) == 3
         assert all(q in results for q in queries)
@@ -160,7 +164,9 @@ class TestBatchUpdate:
             {"id": memory_ids[1], "salience": 0.9},
         ]
 
-        updated_ids = await populated_batch_kernel.update_batch_async(updates, show_progress=False)
+        updated_ids = await populated_batch_kernel.update_batch_async(
+            updates, show_progress=False
+        )
 
         assert len(updated_ids) == 2
         assert all(uid in memory_ids for uid in updated_ids)
@@ -191,7 +197,9 @@ class TestBatchUpdate:
 
         updates = [{"id": memory_id, "content": "Updated content"}]
 
-        updated_ids = await populated_batch_kernel.update_batch_async(updates, show_progress=False)
+        updated_ids = await populated_batch_kernel.update_batch_async(
+            updates, show_progress=False
+        )
 
         assert len(updated_ids) == 1
 
@@ -234,7 +242,9 @@ class TestBatchDelete:
     async def test_delete_batch_nonexistent(self, populated_batch_kernel):
         """Test deleting nonexistent memory."""
         with pytest.raises(FileNotFoundError):
-            await populated_batch_kernel.delete_batch_async(["nonexistent-id"], show_progress=False)
+            await populated_batch_kernel.delete_batch_async(
+                ["nonexistent-id"], show_progress=False
+            )
 
 
 class TestAggregation:
@@ -293,7 +303,9 @@ class TestProgressTracking:
         queries = ["python", "docker", "git"]
 
         # Should not raise even if rich is not installed
-        results = await populated_batch_kernel.retrieve_batch_async(queries, show_progress=True)
+        results = await populated_batch_kernel.retrieve_batch_async(
+            queries, show_progress=True
+        )
 
         assert len(results) == 3
 
@@ -306,7 +318,9 @@ class TestProgressTracking:
         updates = [{"id": memory_id, "tags": ["progress-test"]}]
 
         # Should not raise
-        updated_ids = await populated_batch_kernel.update_batch_async(updates, show_progress=True)
+        updated_ids = await populated_batch_kernel.update_batch_async(
+            updates, show_progress=True
+        )
 
         assert len(updated_ids) == 1
 
@@ -335,7 +349,9 @@ class TestPerformance:
         import time
 
         start = time.time()
-        results = await populated_batch_kernel.retrieve_batch_async(queries, show_progress=False)
+        results = await populated_batch_kernel.retrieve_batch_async(
+            queries, show_progress=False
+        )
         duration = time.time() - start
 
         assert len(results) == 5
@@ -354,7 +370,9 @@ class TestPerformance:
         import time
 
         start = time.time()
-        updated_ids = await populated_batch_kernel.update_batch_async(updates, show_progress=False)
+        updated_ids = await populated_batch_kernel.update_batch_async(
+            updates, show_progress=False
+        )
         duration = time.time() - start
 
         assert len(updated_ids) == len(memory_ids)
@@ -372,7 +390,9 @@ class TestErrorHandling:
         queries = ["python", ""]  # One invalid query
 
         with pytest.raises(ValidationError):
-            await populated_batch_kernel.retrieve_batch_async(queries, show_progress=False)
+            await populated_batch_kernel.retrieve_batch_async(
+                queries, show_progress=False
+            )
 
     @pytest.mark.asyncio
     async def test_partial_failure_update(self, populated_batch_kernel):
@@ -380,10 +400,15 @@ class TestErrorHandling:
         nodes = await populated_batch_kernel.retrieve_nodes_async("python")
         valid_id = nodes[0].id
 
-        updates = [{"id": valid_id, "tags": ["test"]}, {"id": "nonexistent", "tags": ["test"]}]
+        updates = [
+            {"id": valid_id, "tags": ["test"]},
+            {"id": "nonexistent", "tags": ["test"]},
+        ]
 
         with pytest.raises(FileNotFoundError):
-            await populated_batch_kernel.update_batch_async(updates, show_progress=False)
+            await populated_batch_kernel.update_batch_async(
+                updates, show_progress=False
+            )
 
 
 class TestBackwardCompatibility:

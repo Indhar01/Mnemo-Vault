@@ -139,7 +139,11 @@ class MemoGraphError(Exception):
         Returns:
             Dictionary with error information
         """
-        response = {"code": self.code, "message": self.message, "timestamp": self.timestamp}
+        response = {
+            "code": self.code,
+            "message": self.message,
+            "timestamp": self.timestamp,
+        }
 
         # Only include details if present
         if self.details:
@@ -271,7 +275,9 @@ def invalid_memory_type_error(memory_type: str) -> MemoGraphError:
     )
 
 
-def file_system_error(operation: str, path: str, original_error: Exception) -> MemoGraphError:
+def file_system_error(
+    operation: str, path: str, original_error: Exception
+) -> MemoGraphError:
     """
     Create a 'file system error' with helpful suggestions.
 
@@ -328,7 +334,9 @@ def kernel_not_initialized_error() -> MemoGraphError:
 # ============================================================================
 
 
-async def memograph_error_handler(request: Request, exc: MemoGraphError) -> JSONResponse:
+async def memograph_error_handler(
+    request: Request, exc: MemoGraphError
+) -> JSONResponse:
     """
     FastAPI error handler for MemoGraphError exceptions.
 

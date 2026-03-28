@@ -115,10 +115,9 @@ class EnhancedMemoryKernel(MemoryKernel):
 
         if enable_cache:
             # Set cache directory
-            if cache_dir is None:
-                cache_dir = Path(vault_path) / ".cache"
-            else:
-                cache_dir = Path(cache_dir)
+            cache_dir = (
+                Path(vault_path) / ".cache" if cache_dir is None else Path(cache_dir)
+            )
 
             # Initialize embedding cache
             self.embedding_cache = MultiLevelCache(
@@ -185,7 +184,9 @@ class EnhancedMemoryKernel(MemoryKernel):
 
             # Create memory
             start_time = time.time()
-            path = super().remember(title, content, tags=tags, salience=salience, **kwargs)
+            path = super().remember(
+                title, content, tags=tags, salience=salience, **kwargs
+            )
             duration = time.time() - start_time
 
             logger.info(f"Created memory '{title}' in {duration:.3f}s")
@@ -255,7 +256,9 @@ class EnhancedMemoryKernel(MemoryKernel):
                 cache_key = f"{query}|{tags}|{depth}|{top_k}"
                 self.query_cache.put(cache_key, results)
 
-            logger.info(f"Retrieved {len(results)} nodes for '{query}' in {duration:.3f}s")
+            logger.info(
+                f"Retrieved {len(results)} nodes for '{query}' in {duration:.3f}s"
+            )
 
             return results
 
@@ -378,7 +381,9 @@ class EnhancedMemoryKernel(MemoryKernel):
 
 
 # Convenience function to create enhanced kernel
-def create_kernel(vault_path: str, enable_cache: bool = True, **kwargs) -> EnhancedMemoryKernel:
+def create_kernel(
+    vault_path: str, enable_cache: bool = True, **kwargs
+) -> EnhancedMemoryKernel:
     """Create an enhanced memory kernel with sensible defaults.
 
     Args:
@@ -394,4 +399,6 @@ def create_kernel(vault_path: str, enable_cache: bool = True, **kwargs) -> Enhan
         >>> kernel.ingest()
         >>> results = kernel.retrieve_nodes("python tips")
     """
-    return EnhancedMemoryKernel(vault_path=vault_path, enable_cache=enable_cache, **kwargs)
+    return EnhancedMemoryKernel(
+        vault_path=vault_path, enable_cache=enable_cache, **kwargs
+    )

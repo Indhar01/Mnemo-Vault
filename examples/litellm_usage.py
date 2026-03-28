@@ -17,7 +17,11 @@ Environment Setup:
 import asyncio
 
 from memograph import MemoryKernel, MemoryType
-from memograph.adapters.llm.litellm_adapter import LiteLLMClient, LiteLLMConfig, create_client
+from memograph.adapters.llm.litellm_adapter import (
+    LiteLLMClient,
+    LiteLLMConfig,
+    create_client,
+)
 from memograph.core.extractor import SmartAutoOrganizer
 
 
@@ -36,7 +40,9 @@ def example_1_basic_usage():
 
     # Anthropic Claude
     print("\n2. Using Anthropic Claude:")
-    config = LiteLLMConfig(model="claude-3-5-sonnet-20240620", max_tokens=100, temperature=0.7)
+    config = LiteLLMConfig(
+        model="claude-3-5-sonnet-20240620", max_tokens=100, temperature=0.7
+    )
     client = LiteLLMClient(config)
     response = client.generate("What is machine learning?")
     print(f"Response: {response[:150]}...")
@@ -59,7 +65,9 @@ def example_1_basic_usage():
     # Google Gemini
     print("\n4. Using Google Gemini:")
     try:
-        config = LiteLLMConfig(model="gemini/gemini-pro", max_tokens=100, temperature=0.7)
+        config = LiteLLMConfig(
+            model="gemini/gemini-pro", max_tokens=100, temperature=0.7
+        )
         client = LiteLLMClient(config)
         response = client.generate("What is machine learning?")
         print(f"Response: {response[:150]}...")
@@ -130,7 +138,9 @@ def example_3_with_memograph():
     print(f"\nTopics: {[t.name for t in extraction.topics]}")
     print(f"People: {[p.name for p in extraction.people]}")
     print(f"Decisions: {[d.description[:50] + '...' for d in extraction.decisions]}")
-    print(f"Action Items: {[a.description[:50] + '...' for a in extraction.action_items]}")
+    print(
+        f"Action Items: {[a.description[:50] + '...' for a in extraction.action_items]}"
+    )
 
 
 def example_4_fallback():

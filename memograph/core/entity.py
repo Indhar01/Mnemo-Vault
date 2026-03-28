@@ -21,7 +21,9 @@ class EntityNode:
 
     # Relationships
     related_entities: list[str] = field(default_factory=list)  # IDs of related entities
-    mentions: list[str] = field(default_factory=list)  # Memory IDs where this entity is mentioned
+    mentions: list[str] = field(
+        default_factory=list
+    )  # Memory IDs where this entity is mentioned
 
     # Common metadata
     confidence: float = 1.0  # Extraction confidence (0.0-1.0)
@@ -134,7 +136,9 @@ class TimelineEntity(EntityNode):
 
     def __post_init__(self):
         self.entity_type = EntityType.TIMELINE
-        self.metadata["event_date"] = self.event_date.isoformat() if self.event_date else None
+        self.metadata["event_date"] = (
+            self.event_date.isoformat() if self.event_date else None
+        )
         self.metadata["event_type"] = self.event_type
 
 
@@ -185,8 +189,12 @@ class RecurringThemeEntity(EntityNode):
     """Recurring theme across multiple memories."""
 
     frequency: int = 1  # Number of times this theme appears
-    first_occurrence: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
-    last_occurrence: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
+    first_occurrence: datetime = field(
+        default_factory=lambda: datetime.now(timezone.utc)
+    )
+    last_occurrence: datetime = field(
+        default_factory=lambda: datetime.now(timezone.utc)
+    )
 
     def __post_init__(self):
         self.entity_type = EntityType.RECURRING_THEME

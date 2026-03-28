@@ -215,7 +215,9 @@ class SmartAutoOrganizer:
             print(f"Response: {response[:500]}...")
             return {}
 
-    def _create_extraction_result(self, memory_id: str, data: dict[str, Any]) -> ExtractionResult:
+    def _create_extraction_result(
+        self, memory_id: str, data: dict[str, Any]
+    ) -> ExtractionResult:
         """Convert parsed JSON data into entity objects."""
         result = ExtractionResult(memory_id=memory_id)
 
@@ -276,7 +278,9 @@ class SmartAutoOrganizer:
             priority = self._parse_enum(
                 action_data.get("priority"), PriorityLevel, PriorityLevel.MEDIUM
             )
-            status = self._parse_enum(action_data.get("status"), StatusType, StatusType.OPEN)
+            status = self._parse_enum(
+                action_data.get("status"), StatusType, StatusType.OPEN
+            )
             deadline = self._parse_date(action_data.get("deadline"))
 
             action = ActionItemEntity(
@@ -421,7 +425,9 @@ class SmartAutoOrganizer:
             return default
         try:
             # Handle both "low" and "LOW" formats
-            normalized = value.upper() if hasattr(enum_class, value.upper()) else value.lower()
+            normalized = (
+                value.upper() if hasattr(enum_class, value.upper()) else value.lower()
+            )
             # Use getattr to access enum members dynamically
             if hasattr(enum_class, normalized.upper()):
                 return getattr(enum_class, normalized.upper())

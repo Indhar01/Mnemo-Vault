@@ -72,7 +72,13 @@ async def get_analytics(request: Request):
         ]
 
         # Salience distribution
-        salience_buckets = {"0.0-0.2": 0, "0.2-0.4": 0, "0.4-0.6": 0, "0.6-0.8": 0, "0.8-1.0": 0}
+        salience_buckets = {
+            "0.0-0.2": 0,
+            "0.2-0.4": 0,
+            "0.4-0.6": 0,
+            "0.6-0.8": 0,
+            "0.8-1.0": 0,
+        }
 
         for node in all_nodes:
             if node.salience < 0.2:
@@ -98,4 +104,6 @@ async def get_analytics(request: Request):
         )
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to generate analytics: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Failed to generate analytics: {str(e)}"
+        )

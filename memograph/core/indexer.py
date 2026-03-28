@@ -118,7 +118,11 @@ class VaultIndexer:
             current_files = set()
 
             for md_file in self.root.rglob("*.md"):
-                if md_file.name in [CACHE_FILE, GRAPH_CACHE_FILE, EMBEDDINGS_CACHE_FILE]:
+                if md_file.name in [
+                    CACHE_FILE,
+                    GRAPH_CACHE_FILE,
+                    EMBEDDINGS_CACHE_FILE,
+                ]:
                     continue
 
                 rel = md_file.relative_to(self.root).as_posix()
@@ -147,7 +151,11 @@ class VaultIndexer:
         else:
             # Force rebuild or no cache - parse all files
             for md_file in self.root.rglob("*.md"):
-                if md_file.name in [CACHE_FILE, GRAPH_CACHE_FILE, EMBEDDINGS_CACHE_FILE]:
+                if md_file.name in [
+                    CACHE_FILE,
+                    GRAPH_CACHE_FILE,
+                    EMBEDDINGS_CACHE_FILE,
+                ]:
                     continue
 
                 rel = md_file.relative_to(self.root).as_posix()

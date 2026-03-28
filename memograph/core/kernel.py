@@ -189,7 +189,9 @@ class MemoryQuery:
             ValueError: If no search query was provided.
         """
         if not self._query:
-            raise ValueError("Search query is required. Use .search('query string') first.")
+            raise ValueError(
+                "Search query is required. Use .search('query string') first."
+            )
 
         # Retrieve nodes using the kernel
         results = self.kernel.retrieve_nodes(
@@ -221,7 +223,9 @@ class MemoryQuery:
             List of MemoryNode objects matching the query criteria.
         """
         if not self._query:
-            raise ValueError("Search query is required. Use .search('query string') first.")
+            raise ValueError(
+                "Search query is required. Use .search('query string') first."
+            )
 
         # Use async retrieve
         results = await self.kernel.retrieve_nodes_async(
@@ -296,7 +300,9 @@ class MemoryKernel:
 
         self.graph = VaultGraph()
         self.embedding_adapter = embedding_adapter
-        self.indexer = VaultIndexer(self.vault_path, embedding_adapter=embedding_adapter)
+        self.indexer = VaultIndexer(
+            self.vault_path, embedding_adapter=embedding_adapter
+        )
 
         # Initialize retriever based on GAM setting
         self.use_gam = use_gam
@@ -314,7 +320,9 @@ class MemoryKernel:
             )
             logger.info("GAM-enhanced retrieval enabled")
         else:
-            self.retriever = HybridRetriever(self.graph, embedding_adapter=embedding_adapter)
+            self.retriever = HybridRetriever(
+                self.graph, embedding_adapter=embedding_adapter
+            )
             logger.info("Standard hybrid retrieval enabled")
 
         # Auto-extraction setup
@@ -390,7 +398,9 @@ class MemoryKernel:
         # Required parameter
         vault_path = memograph_config.get("vault_path")
         if not vault_path:
-            raise KeyError("Configuration must include 'vault_path' in [memograph] section")
+            raise KeyError(
+                "Configuration must include 'vault_path' in [memograph] section"
+            )
 
         # Optional parameters
         auto_extract = memograph_config.get("auto_extract", False)
@@ -458,7 +468,9 @@ class MemoryKernel:
         auto_extract_str = os.getenv(auto_extract_env, "false").lower()
         auto_extract = auto_extract_str in ("true", "1", "yes", "on")
 
-        logger.info(f"Loaded configuration from environment variables (prefix: {prefix})")
+        logger.info(
+            f"Loaded configuration from environment variables (prefix: {prefix})"
+        )
         logger.info(f"  {vault_path_env}={vault_path}")
         logger.info(f"  {auto_extract_env}={auto_extract}")
 
@@ -489,7 +501,9 @@ class MemoryKernel:
         slug = re.sub(r"[^a-zA-Z0-9]+", "-", text.strip().lower()).strip("-")
         return slug or datetime.now(timezone.utc).strftime("memory-%Y%m%d-%H%M%S")
 
-    def ingest(self, force: bool = False, auto_extract: bool | None = None) -> dict[str, int]:
+    def ingest(
+        self, force: bool = False, auto_extract: bool | None = None
+    ) -> dict[str, int]:
         """
         Ingest all markdown memories from the vault directory into the knowledge graph.
 
@@ -538,7 +552,9 @@ class MemoryKernel:
                 embedding_adapter=self.retriever.embeddings,
                 use_gam=True,
                 gam_config=self.gam_config,
-                access_tracker=getattr(self.retriever, "access_tracker", None),  # Preserve tracker
+                access_tracker=getattr(
+                    self.retriever, "access_tracker", None
+                ),  # Preserve tracker
             )
         else:
             self.retriever = HybridRetriever(
@@ -548,7 +564,9 @@ class MemoryKernel:
         logger.info(f"Indexed {indexed} files, skipped {skipped} unchanged files")
 
         # Perform auto-extraction if enabled
-        extract_enabled = auto_extract if auto_extract is not None else self.auto_extract
+        extract_enabled = (
+            auto_extract if auto_extract is not None else self.auto_extract
+        )
         entities_extracted = 0
 
         if extract_enabled and self.organizer:
@@ -582,7 +600,9 @@ class MemoryKernel:
                 result = self.organizer.extract(memory)
                 self.graph.add_extraction_result(result)
                 total_entities += result.entity_count()
-                logger.debug(f"Extracted {result.entity_count()} entities from {memory.id}")
+                logger.debug(
+                    f"Extracted {result.entity_count()} entities from {memory.id}"
+                )
             except Exception as e:
                 logger.warning(f"Failed to extract from {memory.id}: {e}")
 
@@ -760,7 +780,9 @@ class MemoryKernel:
         """
         # Validate title
         if not title or not isinstance(title, str):
-            raise TypeError(f"title must be a non-empty string, got {type(title).__name__}")
+            raise TypeError(
+                f"title must be a non-empty string, got {type(title).__name__}"
+            )
 
         if not title.strip():
             raise ValueError(
@@ -769,7 +791,9 @@ class MemoryKernel:
 
         # Validate content
         if not content or not isinstance(content, str):
-            raise TypeError(f"content must be a non-empty string, got {type(content).__name__}")
+            raise TypeError(
+                f"content must be a non-empty string, got {type(content).__name__}"
+            )
 
         if not content.strip():
             raise ValueError(
@@ -816,7 +840,9 @@ class MemoryKernel:
         if meta:
             payload["meta"] = meta  # type: ignore[assignment]
 
-        frontmatter = "---\n" + yaml.safe_dump(payload, sort_keys=False).strip() + "\n---\n\n"
+        frontmatter = (
+            "---\n" + yaml.safe_dump(payload, sort_keys=False).strip() + "\n---\n\n"
+        )
 
         # Create body with tags
         body = content.strip()
@@ -992,7 +1018,9 @@ class MemoryKernel:
                 # Find the memory file
                 memory_path = None
                 for md_file in self.vault_path.rglob("*.md"):
-                    if md_file.stem == memory_id or md_file.stem.startswith(f"{memory_id}-"):
+                    if md_file.stem == memory_id or md_file.stem.startswith(
+                        f"{memory_id}-"
+                    ):
                         memory_path = md_file
                         break
 
@@ -1051,12 +1079,16 @@ class MemoryKernel:
 
                 # Write back
                 new_frontmatter = (
-                    "---\n" + yaml.safe_dump(frontmatter, sort_keys=False).strip() + "\n---\n\n"
+                    "---\n"
+                    + yaml.safe_dump(frontmatter, sort_keys=False).strip()
+                    + "\n---\n\n"
                 )
                 memory_path.write_text(new_frontmatter + body + "\n", encoding="utf-8")
 
                 successful_ids.append(memory_id)
-                logger.debug(f"Batch update [{idx + 1}/{len(updates)}]: Updated {memory_id}")
+                logger.debug(
+                    f"Batch update [{idx + 1}/{len(updates)}]: Updated {memory_id}"
+                )
 
             except Exception as e:
                 error_info = (memory_id, e)
@@ -1072,7 +1104,9 @@ class MemoryKernel:
                     )
                     break
 
-        logger.info(f"Batch update complete: {len(successful_ids)} updated, {len(errors)} failed")
+        logger.info(
+            f"Batch update complete: {len(successful_ids)} updated, {len(errors)} failed"
+        )
 
         return successful_ids, errors
 
@@ -1123,7 +1157,9 @@ class MemoryKernel:
         compressor = TokenCompressor(token_limit=token_limit)
         compressed = compressor.compress(nodes)
 
-        logger.debug(f"Generated context window: {len(nodes)} nodes, ~{len(compressed)} chars")
+        logger.debug(
+            f"Generated context window: {len(nodes)} nodes, ~{len(compressed)} chars"
+        )
 
         return compressed
 
@@ -1181,7 +1217,9 @@ class MemoryKernel:
         """
         # Validate query
         if not query or not isinstance(query, str):
-            raise TypeError(f"query must be a non-empty string, got {type(query).__name__}")
+            raise TypeError(
+                f"query must be a non-empty string, got {type(query).__name__}"
+            )
 
         if not query.strip():
             raise ValueError("query cannot be empty")
@@ -1329,7 +1367,9 @@ class MemoryKernel:
 
             # Re-sort by boosted salience
             results.sort(key=lambda n: n.salience, reverse=True)
-            logger.debug(f"Applied recency boost with decay factor {options.time_decay_factor}")
+            logger.debug(
+                f"Applied recency boost with decay factor {options.time_decay_factor}"
+            )
 
         # Include backlinks if requested
         if options.include_backlinks:
@@ -1339,7 +1379,9 @@ class MemoryKernel:
                 backlink_ids.update(node.backlinks)
 
             for backlink_id in backlink_ids:
-                if (backlink_node := self.graph.get(backlink_id)) and backlink_node not in results:
+                if (
+                    backlink_node := self.graph.get(backlink_id)
+                ) and backlink_node not in results:
                     results.append(backlink_node)
 
             logger.debug(f"Included {len(backlink_ids)} backlink nodes")
@@ -1559,7 +1601,9 @@ class MemoryKernel:
             ...     stats = await kernel.ingest_async()
             ...     print(f"Loaded {stats['total']} memories")
         """
-        return await asyncio.to_thread(self.ingest, force=force, auto_extract=auto_extract)
+        return await asyncio.to_thread(
+            self.ingest, force=force, auto_extract=auto_extract
+        )
 
     async def retrieve_nodes_async(
         self,

@@ -40,7 +40,9 @@ def parse_file(path: Path, vault_root: Path) -> MemoryNode:
 
     created = frontmatter.get("created")
     try:
-        created_at = datetime.fromisoformat(created) if created else datetime.now(timezone.utc)
+        created_at = (
+            datetime.fromisoformat(created) if created else datetime.now(timezone.utc)
+        )
     except (TypeError, ValueError):
         created_at = datetime.now(timezone.utc)
 

@@ -236,7 +236,9 @@ class ActionLogger:
                 }
             elif (
                 current_group["memory_id"] == action["memory_id"]
-                and (timestamp - datetime.fromisoformat(current_group["end_time"])).total_seconds()
+                and (
+                    timestamp - datetime.fromisoformat(current_group["end_time"])
+                ).total_seconds()
                 <= time_window_seconds
             ):
                 # Add to current group
@@ -272,10 +274,14 @@ class ActionLogger:
             else:
                 history = self._read_history()
                 filtered = [
-                    a for a in history if datetime.fromisoformat(a["timestamp"]) >= before_date
+                    a
+                    for a in history
+                    if datetime.fromisoformat(a["timestamp"]) >= before_date
                 ]
                 self._write_history(filtered)
-                logger.info(f"Cleared {len(history) - len(filtered)} actions before {before_date}")
+                logger.info(
+                    f"Cleared {len(history) - len(filtered)} actions before {before_date}"
+                )
 
     def _read_history(self) -> list[dict[str, Any]]:
         """Read history from file."""

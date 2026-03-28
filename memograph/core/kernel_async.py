@@ -87,7 +87,9 @@ class AsyncMemoryKernel(EnhancedMemoryKernel):
         super().__init__(vault_path=vault_path, **kwargs)
         self.max_concurrent = max_concurrent
         self._semaphore = asyncio.Semaphore(max_concurrent)
-        logger.info(f"AsyncMemoryKernel initialized with max_concurrent={max_concurrent}")
+        logger.info(
+            f"AsyncMemoryKernel initialized with max_concurrent={max_concurrent}"
+        )
 
     async def remember_async(
         self,
@@ -206,7 +208,9 @@ class AsyncMemoryKernel(EnhancedMemoryKernel):
             ...     print("Vault indexed!")
         """
         # Run synchronous ingest in thread pool
-        await asyncio.to_thread(super().ingest, force=force, show_progress=show_progress)
+        await asyncio.to_thread(
+            super().ingest, force=force, show_progress=show_progress
+        )
         logger.info("Vault ingested async")
 
     async def remember_batch_async(
@@ -242,10 +246,12 @@ class AsyncMemoryKernel(EnhancedMemoryKernel):
         """
         if show_progress:
             try:
-                from rich.progress import Progress, TaskID
+                from rich.progress import Progress
 
                 with Progress() as progress:
-                    task = progress.add_task("[cyan]Creating memories...", total=len(memories))
+                    task = progress.add_task(
+                        "[cyan]Creating memories...", total=len(memories)
+                    )
 
                     async def create_with_progress(memory: dict[str, Any]) -> str:
                         path = await self.remember_async(
@@ -257,7 +263,9 @@ class AsyncMemoryKernel(EnhancedMemoryKernel):
                         progress.update(task, advance=1)
                         return path
 
-                    paths = await asyncio.gather(*[create_with_progress(m) for m in memories])
+                    paths = await asyncio.gather(
+                        *[create_with_progress(m) for m in memories]
+                    )
             except ImportError:
                 # Fallback without progress bar
                 paths = await asyncio.gather(
@@ -290,7 +298,9 @@ class AsyncMemoryKernel(EnhancedMemoryKernel):
         logger.info(f"Created {len(paths)} memories in batch")
         return paths
 
-    async def context_window_async(self, query: str, token_limit: int = 2048, **kwargs) -> str:
+    async def context_window_async(
+        self, query: str, token_limit: int = 2048, **kwargs
+    ) -> str:
         """Retrieve context window asynchronously.
 
         Args:
@@ -357,7 +367,10 @@ async def create_async_kernel(
         ...     return kernel
     """
     kernel = AsyncMemoryKernel(
-        vault_path=vault_path, enable_cache=enable_cache, max_concurrent=max_concurrent, **kwargs
+        vault_path=vault_path,
+        enable_cache=enable_cache,
+        max_concurrent=max_concurrent,
+        **kwargs,
     )
     await kernel.ingest_async()
     return kernel

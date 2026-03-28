@@ -45,7 +45,9 @@ class LiteLLMConfig:
         drop_params: Drop unsupported parameters instead of erroring
     """
 
-    model: str = field(default_factory=lambda: os.environ.get("LITELLM_MODEL", "gpt-3.5-turbo"))
+    model: str = field(
+        default_factory=lambda: os.environ.get("LITELLM_MODEL", "gpt-3.5-turbo")
+    )
     max_tokens: int = 1024
     temperature: float = 0.1
     api_key: str | None = None
@@ -163,7 +165,9 @@ class LiteLLMClient:
 
             raise RuntimeError(error_msg) from e
 
-    async def generate_async(self, prompt: str, config: LiteLLMConfig | None = None) -> str:
+    async def generate_async(
+        self, prompt: str, config: LiteLLMConfig | None = None
+    ) -> str:
         """
         Async version of generate() for better performance in async contexts.
 
@@ -204,11 +208,16 @@ class LiteLLMClient:
             return str(content).strip()
 
         except Exception as e:
-            error_msg = f"Async LLM generation failed with model '{cfg.model}': {str(e)}"
+            error_msg = (
+                f"Async LLM generation failed with model '{cfg.model}': {str(e)}"
+            )
             raise RuntimeError(error_msg) from e
 
     def generate_with_fallback(
-        self, prompt: str, fallback_models: list[str], config: LiteLLMConfig | None = None
+        self,
+        prompt: str,
+        fallback_models: list[str],
+        config: LiteLLMConfig | None = None,
     ) -> str:
         """
         Generate with automatic fallback to alternative models on failure.
@@ -250,7 +259,9 @@ class LiteLLMClient:
                 last_error = e
                 continue
 
-        raise RuntimeError(f"All models failed. Last error: {last_error}") from last_error
+        raise RuntimeError(
+            f"All models failed. Last error: {last_error}"
+        ) from last_error
 
     def stream_generate(self, prompt: str, config: LiteLLMConfig | None = None):
         """

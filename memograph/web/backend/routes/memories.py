@@ -24,7 +24,12 @@ from ..errors import (
     validate_pagination,
     validate_salience,
 )
-from ..models import CreateMemoryRequest, MemoryListResponse, MemoryResponse, UpdateMemoryRequest
+from ..models import (
+    CreateMemoryRequest,
+    MemoryListResponse,
+    MemoryResponse,
+    UpdateMemoryRequest,
+)
 
 # Initialize logger for this module
 logger = logging.getLogger("memograph.api.memories")
@@ -40,13 +45,17 @@ async def list_memories(
     page_size: int = Query(20, ge=1, le=100, description="Items per page (max 100)"),
     memory_type: str | None = Query(None, description="Filter by memory type"),
     tags: str | None = Query(None, description="Comma-separated tags to filter by"),
-    min_salience: float = Query(0.0, ge=0.0, le=1.0, description="Minimum salience score"),
+    min_salience: float = Query(
+        0.0, ge=0.0, le=1.0, description="Minimum salience score"
+    ),
     sort_by: str = Query(
         "modified_at",
         pattern="^(salience|created_at|modified_at|title)$",
         description="Field to sort by",
     ),
-    order: str = Query("desc", pattern="^(asc|desc)$", description="Sort order (asc or desc)"),
+    order: str = Query(
+        "desc", pattern="^(asc|desc)$", description="Sort order (asc or desc)"
+    ),
 ):
     """
     List memories with pagination and filtering.
@@ -107,7 +116,9 @@ async def list_memories(
             except ValueError:
                 raise invalid_memory_type_error(memory_type)
 
-            filtered_nodes = [n for n in filtered_nodes if n.memory_type.value == memory_type]
+            filtered_nodes = [
+                n for n in filtered_nodes if n.memory_type.value == memory_type
+            ]
             logger.debug(f"After memory_type filter: {len(filtered_nodes)} memories")
 
         # Filter by tags if specified (OR operation - matches any tag)
@@ -117,7 +128,9 @@ async def list_memories(
                 filtered_nodes = [
                     n for n in filtered_nodes if any(tag in n.tags for tag in tag_list)
                 ]
-                logger.debug(f"After tags filter ({tag_list}): {len(filtered_nodes)} memories")
+                logger.debug(
+                    f"After tags filter ({tag_list}): {len(filtered_nodes)} memories"
+                )
 
         # Filter by minimum salience if specified
         if min_salience > 0:
@@ -181,7 +194,9 @@ async def list_memories(
         raise
     except Exception as e:
         logger.error(f"Failed to list memories: {str(e)}", exc_info=True)
-        raise HTTPException(status_code=500, detail=f"Failed to list memories: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Failed to list memories: {str(e)}"
+        )
 
 
 @router.get("/memories/{memory_id}", response_model=MemoryResponse)
@@ -192,7 +207,9 @@ async def get_memory(memory_id: str, request: Request):
     try:
         node = kernel.graph.get(memory_id)
         if not node:
-            raise HTTPException(status_code=404, detail=f"Memory '{memory_id}' not found")
+            raise HTTPException(
+                status_code=404, detail=f"Memory '{memory_id}' not found"
+            )
 
         return MemoryResponse(
             id=node.id,
@@ -214,7 +231,9 @@ async def get_memory(memory_id: str, request: Request):
         raise
     except Exception as e:
         logger.error(f"Failed to get memory: {str(e)}", exc_info=True)
-        raise HTTPException(status_code=500, detail=f"Failed to retrieve memory: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Failed to retrieve memory: {str(e)}"
+        )
 
 
 @router.post("/memories", response_model=dict)
@@ -244,10 +263,16 @@ async def create_memory(memory: CreateMemoryRequest, request: Request):
 
         memory_id = Path(file_path).stem
 
-        return {"id": memory_id, "file_path": file_path, "message": "Memory created successfully"}
+        return {
+            "id": memory_id,
+            "file_path": file_path,
+            "message": "Memory created successfully",
+        }
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to create memory: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Failed to create memory: {str(e)}"
+        )
 
 
 @router.put("/memories/{memory_id}", response_model=dict)
@@ -259,7 +284,9 @@ async def update_memory(memory_id: str, update: UpdateMemoryRequest, request: Re
         # Check if memory exists
         node = kernel.graph.get(memory_id)
         if not node:
-            raise HTTPException(status_code=404, detail=f"Memory '{memory_id}' not found")
+            raise HTTPException(
+                status_code=404, detail=f"Memory '{memory_id}' not found"
+            )
 
         # Prepare update data
         update_data = {}
@@ -278,7 +305,9 @@ async def update_memory(memory_id: str, update: UpdateMemoryRequest, request: Re
         )
 
         if errors:
-            raise HTTPException(status_code=500, detail=f"Update failed: {errors[0][1]}")
+            raise HTTPException(
+                status_code=500, detail=f"Update failed: {errors[0][1]}"
+            )
 
         # Re-ingest
         await kernel.ingest_async(force=False)
@@ -288,7 +317,9 @@ async def update_memory(memory_id: str, update: UpdateMemoryRequest, request: Re
     except HTTPException:
         raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to update memory: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Failed to update memory: {str(e)}"
+        )
 
 
 @router.delete("/memories/{memory_id}")
@@ -299,7 +330,9 @@ async def delete_memory(memory_id: str, request: Request):
     try:
         node = kernel.graph.get(memory_id)
         if not node:
-            raise HTTPException(status_code=404, detail=f"Memory '{memory_id}' not found")
+            raise HTTPException(
+                status_code=404, detail=f"Memory '{memory_id}' not found"
+            )
 
         # Delete the file
         if node.source_path:
@@ -317,4 +350,6 @@ async def delete_memory(memory_id: str, request: Request):
     except HTTPException:
         raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to delete memory: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Failed to delete memory: {str(e)}"
+        )

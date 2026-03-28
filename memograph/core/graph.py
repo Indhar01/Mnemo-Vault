@@ -9,9 +9,13 @@ class VaultGraph:
     def __init__(self):
         self._nodes: dict[str, MemoryNode] = {}
         self._entities: dict[str, EntityNode] = {}  # Store extracted entities
-        self._extraction_results: dict[str, ExtractionResult] = {}  # Memory ID -> ExtractionResult
+        self._extraction_results: dict[
+            str, ExtractionResult
+        ] = {}  # Memory ID -> ExtractionResult
         self._adjacency: dict[str, set[str]] = defaultdict(set)
-        self._entity_adjacency: dict[str, set[str]] = defaultdict(set)  # Entity relationships
+        self._entity_adjacency: dict[str, set[str]] = defaultdict(
+            set
+        )  # Entity relationships
 
     def add_node(self, node: MemoryNode):
         self._nodes[node.id] = node

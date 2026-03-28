@@ -13,7 +13,12 @@ import time
 
 import pytest
 
-from memograph.storage.cache_enhanced import DiskCache, LRUCache, MultiLevelCache, QueryResultCache
+from memograph.storage.cache_enhanced import (
+    DiskCache,
+    LRUCache,
+    MultiLevelCache,
+    QueryResultCache,
+)
 
 
 class TestLRUCache:
@@ -226,7 +231,9 @@ class TestMultiLevelCache:
 
         stats = cache.get_stats()
         assert stats["combined"]["hits"] == 3  # 2 memory + 1 disk
-        assert stats["combined"]["misses"] == 3  # 2 from memory after clear, 1 actual miss
+        assert (
+            stats["combined"]["misses"] == 3
+        )  # 2 from memory after clear, 1 actual miss
         assert stats["combined"]["hit_rate"] == 0.5
 
     def test_clear_all(self, tmp_path):

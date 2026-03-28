@@ -18,7 +18,9 @@ def main():
     if len(sys.argv) > 1:
         vault_path = sys.argv[1]
     else:
-        vault_path = input("Enter vault path (or press Enter for default './vault'): ").strip()
+        vault_path = input(
+            "Enter vault path (or press Enter for default './vault'): "
+        ).strip()
         if not vault_path:
             vault_path = "./vault"
 

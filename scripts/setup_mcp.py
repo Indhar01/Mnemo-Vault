@@ -84,7 +84,10 @@ def get_config_path(client: str) -> Path | None:
 
     if client == "claude":
         if system == "Darwin":  # macOS
-            return Path.home() / "Library/Application Support/Claude/claude_desktop_config.json"
+            return (
+                Path.home()
+                / "Library/Application Support/Claude/claude_desktop_config.json"
+            )
         elif system == "Windows":
             appdata = os.environ.get("APPDATA")
             if appdata:
@@ -356,7 +359,9 @@ def main():
     )
     parser.add_argument(
         "--vault",
-        default=os.environ.get("MEMOGRAPH_VAULT", str(Path.home() / "Documents/memograph-vault")),
+        default=os.environ.get(
+            "MEMOGRAPH_VAULT", str(Path.home() / "Documents/memograph-vault")
+        ),
         help="Path to MemoGraph vault (default: $MEMOGRAPH_VAULT or ~/Documents/memograph-vault)",
     )
     parser.add_argument(

@@ -135,8 +135,16 @@ def extraction_response():
             }
         ],
         "questions": [
-            {"question": "Do we need real-time updates?", "asked_by": None, "status": "unresolved"},
-            {"question": "What's the budget?", "asked_by": None, "status": "unresolved"},
+            {
+                "question": "Do we need real-time updates?",
+                "asked_by": None,
+                "status": "unresolved",
+            },
+            {
+                "question": "What's the budget?",
+                "asked_by": None,
+                "status": "unresolved",
+            },
         ],
         "sentiment": {
             "type": "productive",
@@ -151,7 +159,11 @@ def extraction_response():
             }
         ],
         "references": [
-            {"name": "Figma design", "url": "https://figma.com/design/123", "type": "url"},
+            {
+                "name": "Figma design",
+                "url": "https://figma.com/design/123",
+                "type": "url",
+            },
             {"name": "API docs", "url": "https://api.example.com/docs", "type": "url"},
         ],
         "ideas": [
@@ -181,7 +193,10 @@ def extraction_response():
             },
         ],
         "recurring_themes": [
-            {"theme": "Timeline pressure", "description": "Common concern across projects"}
+            {
+                "theme": "Timeline pressure",
+                "description": "Common concern across projects",
+            }
         ],
     }
 

@@ -54,7 +54,9 @@ class MemoGraphMCPServer:
         self.autonomous_hooks = AutonomousHooks(self)
 
         # Check if autonomous mode is enabled via environment variable
-        auto_mode = os.environ.get("MEMOGRAPH_AUTONOMOUS_MODE", "false").lower() == "true"
+        auto_mode = (
+            os.environ.get("MEMOGRAPH_AUTONOMOUS_MODE", "false").lower() == "true"
+        )
         if auto_mode:
             self.autonomous_hooks.auto_search_enabled = True
             self.autonomous_hooks.auto_save_responses = True
@@ -195,7 +197,9 @@ class MemoGraphMCPServer:
                     "memory_type": node.memory_type.value,
                     "tags": node.tags,
                     "salience": node.salience,
-                    "created_at": node.created_at.isoformat() if node.created_at else None,
+                    "created_at": node.created_at.isoformat()
+                    if node.created_at
+                    else None,
                 }
                 for node in results
             ]
@@ -290,7 +294,11 @@ class MemoGraphMCPServer:
             Dictionary with answer (if LLM available) or context (for client to use)
         """
         try:
-            from ..core.assistant import build_answer_prompt, retrieve_cited_context, run_answer
+            from ..core.assistant import (
+                build_answer_prompt,
+                retrieve_cited_context,
+                run_answer,
+            )
 
             # Get context from vault (core functionality - no LLM needed)
             context, sources = retrieve_cited_context(
@@ -456,7 +464,9 @@ class MemoGraphMCPServer:
                     "memory_type": node.memory_type.value,
                     "tags": node.tags,
                     "salience": node.salience,
-                    "created_at": node.created_at.isoformat() if node.created_at else None,
+                    "created_at": node.created_at.isoformat()
+                    if node.created_at
+                    else None,
                     "preview": node.content[:200] + "..."
                     if len(node.content) > 200
                     else node.content,
@@ -514,8 +524,12 @@ class MemoGraphMCPServer:
                         "links": node.links,
                         "backlinks": node.backlinks,
                         "salience": node.salience,
-                        "created_at": node.created_at.isoformat() if node.created_at else None,
-                        "modified_at": node.modified_at.isoformat() if node.modified_at else None,
+                        "created_at": node.created_at.isoformat()
+                        if node.created_at
+                        else None,
+                        "modified_at": node.modified_at.isoformat()
+                        if node.modified_at
+                        else None,
                     },
                 }
             )
@@ -589,7 +603,9 @@ class MemoGraphMCPServer:
             # Find the memory file
             memory_path = None
             for md_file in self.vault_path.rglob("*.md"):
-                if md_file.stem == memory_id or md_file.stem.startswith(f"{memory_id}-"):
+                if md_file.stem == memory_id or md_file.stem.startswith(
+                    f"{memory_id}-"
+                ):
                     memory_path = md_file
                     break
 
@@ -662,7 +678,9 @@ class MemoGraphMCPServer:
             # Find the memory file
             memory_path = None
             for md_file in self.vault_path.rglob("*.md"):
-                if md_file.stem == memory_id or md_file.stem.startswith(f"{memory_id}-"):
+                if md_file.stem == memory_id or md_file.stem.startswith(
+                    f"{memory_id}-"
+                ):
                     memory_path = md_file
                     break
 
@@ -692,7 +710,10 @@ class MemoGraphMCPServer:
                 frontmatter["title"] = title
             if salience is not None:
                 if not 0.0 <= salience <= 1.0:
-                    return {"success": False, "error": "Salience must be between 0.0 and 1.0"}
+                    return {
+                        "success": False,
+                        "error": "Salience must be between 0.0 and 1.0",
+                    }
                 frontmatter["salience"] = salience
             frontmatter["modified"] = datetime.now(timezone.utc).isoformat()
 
@@ -711,7 +732,9 @@ class MemoGraphMCPServer:
 
             # Write back
             new_frontmatter = (
-                "---\n" + yaml.safe_dump(frontmatter, sort_keys=False).strip() + "\n---\n\n"
+                "---\n"
+                + yaml.safe_dump(frontmatter, sort_keys=False).strip()
+                + "\n---\n\n"
             )
             memory_path.write_text(new_frontmatter + body + "\n", encoding="utf-8")
 

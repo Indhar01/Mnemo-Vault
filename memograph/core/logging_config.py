@@ -157,7 +157,8 @@ def setup_logging(
         formatter = JSONFormatter()
     else:
         formatter = logging.Formatter(
-            fmt="%(asctime)s - %(name)s - %(levelname)s - %(message)s", datefmt="%Y-%m-%d %H:%M:%S"
+            fmt="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+            datefmt="%Y-%m-%d %H:%M:%S",
         )
 
     # Console handler
@@ -222,7 +223,9 @@ class SensitiveDataFilter(logging.Filter):
 
         for pattern in self.SENSITIVE_PATTERNS:
             if pattern in message:
-                record.msg = record.msg.replace(record.msg, f"[REDACTED: contains {pattern}]")
+                record.msg = record.msg.replace(
+                    record.msg, f"[REDACTED: contains {pattern}]"
+                )
 
         return True
 
@@ -249,7 +252,9 @@ def get_logger(name: str, context: dict[str, Any] | None = None) -> logging.Logg
     return logger
 
 
-def log_performance(logger: logging.Logger, operation: str, duration_ms: float, **kwargs) -> None:
+def log_performance(
+    logger: logging.Logger, operation: str, duration_ms: float, **kwargs
+) -> None:
     """Log performance metrics in a structured way.
 
     Args:
@@ -302,7 +307,9 @@ def log_error(
     }
 
     logger.error(
-        f"Error in {operation}: {str(error)}", exc_info=True, extra={"error_details": error_data}
+        f"Error in {operation}: {str(error)}",
+        exc_info=True,
+        extra={"error_details": error_data},
     )
 
 

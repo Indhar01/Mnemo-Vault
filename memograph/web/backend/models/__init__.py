@@ -1,7 +1,6 @@
 """Pydantic models for request/response validation."""
 
-from datetime import datetime
-from typing import Any, Optional
+from typing import Any
 
 from pydantic import BaseModel, Field, validator
 
@@ -57,7 +56,9 @@ class CreateMemoryRequest(BaseModel):
 
     title: str = Field(..., min_length=1, max_length=500)
     content: str = Field(..., min_length=1)
-    memory_type: str = Field(default="fact", pattern="^(episodic|semantic|procedural|fact)$")
+    memory_type: str = Field(
+        default="fact", pattern="^(episodic|semantic|procedural|fact)$"
+    )
     tags: list[str] = Field(default_factory=list)
     salience: float = Field(default=0.5, ge=0.0, le=1.0)
     meta: dict[str, Any] | None = None

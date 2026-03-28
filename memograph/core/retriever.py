@@ -32,7 +32,9 @@ class HybridRetriever:
 
         # 2. Metadata filter
         # Only fetch from full graph if filters are applied or we have no seeds
-        filters_active = (tags is not None) or (memory_type is not None) or (min_salience > 0.0)
+        filters_active = (
+            (tags is not None) or (memory_type is not None) or (min_salience > 0.0)
+        )
 
         if filters_active or not candidates:
             filtered = self.graph.filter(
@@ -47,7 +49,9 @@ class HybridRetriever:
             results_list = self._rerank(query, list(candidates.values()))
         else:
             results_list = sorted(
-                candidates.values(), key=lambda n: (n.salience, n.access_count), reverse=True
+                candidates.values(),
+                key=lambda n: (n.salience, n.access_count),
+                reverse=True,
             )
 
         return results_list[:top_k]

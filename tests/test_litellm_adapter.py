@@ -11,13 +11,18 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-from memograph.adapters.llm.litellm_adapter import LiteLLMClient, LiteLLMConfig, create_client
+from memograph.adapters.llm.litellm_adapter import (
+    LiteLLMClient,
+    LiteLLMConfig,
+    create_client,
+)
 
 LITELLM_AVAILABLE = importlib.util.find_spec("litellm") is not None
 
 # Skip marker for tests that require litellm
 requires_litellm = pytest.mark.skipif(
-    not LITELLM_AVAILABLE, reason="LiteLLM not properly installed or has dependency issues"
+    not LITELLM_AVAILABLE,
+    reason="LiteLLM not properly installed or has dependency issues",
 )
 
 
@@ -77,7 +82,9 @@ class TestLiteLLMClient:
 
     def test_litellm_import_error(self):
         """Test error when litellm not installed"""
-        with patch("builtins.__import__", side_effect=ImportError("No module named 'litellm'")):
+        with patch(
+            "builtins.__import__", side_effect=ImportError("No module named 'litellm'")
+        ):
             with pytest.raises(RuntimeError) as exc_info:
                 LiteLLMClient()
             assert "LiteLLM is not installed" in str(exc_info.value)
@@ -195,7 +202,9 @@ class TestLiteLLMClient:
         mock_completion.side_effect = [Exception("Primary failed"), mock_response]
 
         client = LiteLLMClient(LiteLLMConfig(model="gpt-4"))
-        response = client.generate_with_fallback("Test", fallback_models=["gpt-3.5-turbo"])
+        response = client.generate_with_fallback(
+            "Test", fallback_models=["gpt-3.5-turbo"]
+        )
 
         assert response == "Fallback response"
         assert mock_completion.call_count == 2

@@ -32,10 +32,16 @@ router = APIRouter()
 @router.get("/graph", response_model=GraphResponse)
 async def get_graph_data(
     request: Request,
-    limit: int | None = Query(None, ge=1, le=500, description="Maximum number of nodes to return"),
-    min_salience: float = Query(0.0, ge=0.0, le=1.0, description="Minimum salience score"),
+    limit: int | None = Query(
+        None, ge=1, le=500, description="Maximum number of nodes to return"
+    ),
+    min_salience: float = Query(
+        0.0, ge=0.0, le=1.0, description="Minimum salience score"
+    ),
     tags: str | None = Query(None, description="Comma-separated tags to filter by"),
-    focus_node: str | None = Query(None, description="Center graph around this node ID"),
+    focus_node: str | None = Query(
+        None, description="Center graph around this node ID"
+    ),
 ):
     """
     Get graph data for visualization.
@@ -81,7 +87,9 @@ async def get_graph_data(
         if min_salience > 0:
             validate_salience(min_salience)
             filtered_nodes = [n for n in filtered_nodes if n.salience >= min_salience]
-            logger.debug(f"After salience filter (>={min_salience}): {len(filtered_nodes)} nodes")
+            logger.debug(
+                f"After salience filter (>={min_salience}): {len(filtered_nodes)} nodes"
+            )
 
         # Filter by tags if specified (OR operation - matches any tag)
         if tags:
@@ -90,7 +98,9 @@ async def get_graph_data(
                 filtered_nodes = [
                     n for n in filtered_nodes if any(tag in n.tags for tag in tag_list)
                 ]
-                logger.debug(f"After tags filter ({tag_list}): {len(filtered_nodes)} nodes")
+                logger.debug(
+                    f"After tags filter ({tag_list}): {len(filtered_nodes)} nodes"
+                )
 
         # If focus_node is specified, get its neighborhood
         if focus_node:
@@ -152,7 +162,9 @@ async def get_graph_data(
                 if link in node_ids:
                     edge_key = (node.id, link)
                     if edge_key not in seen_edges:
-                        edges.append(GraphEdge(source=node.id, target=link, type="wikilink"))
+                        edges.append(
+                            GraphEdge(source=node.id, target=link, type="wikilink")
+                        )
                         seen_edges.add(edge_key)
 
         logger.info(f"Graph response: {len(nodes)} nodes, {len(edges)} edges")
@@ -247,7 +259,9 @@ async def get_neighbors(
         # Get neighbors at specified depth
         neighbors = kernel.graph.neighbors(node_id, depth=depth)
 
-        logger.info(f"Found {len(neighbors)} neighbors for node {node_id} at depth {depth}")
+        logger.info(
+            f"Found {len(neighbors)} neighbors for node {node_id} at depth {depth}"
+        )
 
         return {
             "node_id": node_id,

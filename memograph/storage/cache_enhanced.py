@@ -110,7 +110,9 @@ class LRUCache:
                 if not self._cache:
                     break
 
-                evicted_key, (evicted_value, evicted_size) = self._cache.popitem(last=False)
+                evicted_key, (evicted_value, evicted_size) = self._cache.popitem(
+                    last=False
+                )
                 self._current_size_bytes -= evicted_size
                 self.stats.evictions += 1
                 logger.debug(f"Evicted from cache: {evicted_key}")
@@ -219,7 +221,9 @@ class DiskCache:
                 self._save_metadata()
 
                 self.stats.disk_writes += 1
-                self.stats.total_size_bytes = sum(m["size"] for m in self._metadata.values())
+                self.stats.total_size_bytes = sum(
+                    m["size"] for m in self._metadata.values()
+                )
                 logger.debug(f"Disk cached: {key}")
 
             except Exception as e:
@@ -295,7 +299,9 @@ class MultiLevelCache:
             memory_max_mb: Max memory usage in MB
             enable_disk_cache: Whether to enable disk caching
         """
-        self.memory_cache = LRUCache(max_size=memory_max_size, max_memory_mb=memory_max_mb)
+        self.memory_cache = LRUCache(
+            max_size=memory_max_size, max_memory_mb=memory_max_mb
+        )
 
         self.disk_cache: DiskCache | None = None
         if enable_disk_cache:
