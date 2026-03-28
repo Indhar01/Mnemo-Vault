@@ -10,7 +10,6 @@ This test suite validates:
 - Performance improvements
 """
 
-import time
 from pathlib import Path
 
 import pytest
@@ -35,7 +34,7 @@ def enhanced_kernel(temp_vault):
         enable_cache=True,
         memory_cache_size=100,
         query_cache_ttl=60,
-        validate_inputs=True
+        validate_inputs=True,
     )
     return kernel
 
@@ -76,20 +75,14 @@ class TestKernelInitialization:
 
     def test_initialization_without_cache(self, temp_vault):
         """Test initialization with caching disabled."""
-        kernel = EnhancedMemoryKernel(
-            vault_path=str(temp_vault),
-            enable_cache=False
-        )
+        kernel = EnhancedMemoryKernel(vault_path=str(temp_vault), enable_cache=False)
 
         assert kernel.embedding_cache is None
         assert kernel.query_cache is None
 
     def test_initialization_without_validation(self, temp_vault):
         """Test initialization with validation disabled."""
-        kernel = EnhancedMemoryKernel(
-            vault_path=str(temp_vault),
-            validate_inputs=False
-        )
+        kernel = EnhancedMemoryKernel(vault_path=str(temp_vault), validate_inputs=False)
 
         assert kernel.validate_inputs is False
 
@@ -101,7 +94,7 @@ class TestKernelInitialization:
             vault_path=str(temp_vault),
             cache_dir=str(cache_dir),
             memory_cache_size=500,
-            query_cache_ttl=120
+            query_cache_ttl=120,
         )
 
         assert kernel.embedding_cache is not None
@@ -121,10 +114,7 @@ class TestRememberWithValidation:
     def test_remember_valid_inputs(self, enhanced_kernel):
         """Test remember with valid inputs."""
         path = enhanced_kernel.remember(
-            title="Test Memory",
-            content="Test content",
-            tags=["test", "example"],
-            salience=0.8
+            title="Test Memory", content="Test content", tags=["test", "example"], salience=0.8
         )
 
         assert Path(path).exists()
@@ -133,20 +123,14 @@ class TestRememberWithValidation:
     def test_remember_empty_title(self, enhanced_kernel):
         """Test remember with empty title."""
         with pytest.raises(ValidationError) as exc_info:
-            enhanced_kernel.remember(
-                title="",
-                content="Test content"
-            )
+            enhanced_kernel.remember(title="", content="Test content")
 
         assert "title" in str(exc_info.value).lower()
 
     def test_remember_empty_content(self, enhanced_kernel):
         """Test remember with empty content."""
         with pytest.raises(ValidationError) as exc_info:
-            enhanced_kernel.remember(
-                title="Test",
-                content=""
-            )
+            enhanced_kernel.remember(title="Test", content="")
 
         assert "content" in str(exc_info.value).lower()
 
@@ -156,7 +140,7 @@ class TestRememberWithValidation:
             enhanced_kernel.remember(
                 title="Test",
                 content="Content",
-                tags=["a" * 101]  # Tag too long
+                tags=["a" * 101],  # Tag too long
             )
 
     def test_remember_invalid_salience(self, enhanced_kernel):
@@ -165,7 +149,7 @@ class TestRememberWithValidation:
             enhanced_kernel.remember(
                 title="Test",
                 content="Content",
-                salience=1.5  # Out of range
+                salience=1.5,  # Out of range
             )
 
     def test_remember_tag_normalization(self, enhanced_kernel):
@@ -173,7 +157,7 @@ class TestRememberWithValidation:
         path = enhanced_kernel.remember(
             title="Test",
             content="Content",
-            tags=["Python", "  ML  ", "Python"]  # Mixed case, whitespace, duplicates
+            tags=["Python", "  ML  ", "Python"],  # Mixed case, whitespace, duplicates
         )
 
         # Read the file to verify tags
@@ -208,33 +192,24 @@ class TestRetrieveWithCaching:
         # Note: This might not always be true in test environment
         # but we can check cache stats instead
         stats = populated_kernel.get_cache_stats()
-        if 'query' in stats:
-            assert stats['query']['hits'] > 0
+        if "query" in stats:
+            assert stats["query"]["hits"] > 0
 
     def test_retrieve_with_tags_filter(self, populated_kernel):
         """Test retrieval with tag filtering."""
-        results = populated_kernel.retrieve_nodes(
-            query="programming",
-            tags=["python"]
-        )
+        results = populated_kernel.retrieve_nodes(query="programming", tags=["python"])
 
         assert all("python" in node.tags for node in results)
 
     def test_retrieve_with_depth(self, populated_kernel):
         """Test retrieval with custom depth."""
-        results = populated_kernel.retrieve_nodes(
-            query="python",
-            depth=1
-        )
+        results = populated_kernel.retrieve_nodes(query="python", depth=1)
 
         assert len(results) > 0
 
     def test_retrieve_with_top_k(self, populated_kernel):
         """Test retrieval with top_k limit."""
-        results = populated_kernel.retrieve_nodes(
-            query="python",
-            top_k=2
-        )
+        results = populated_kernel.retrieve_nodes(query="python", top_k=2)
 
         assert len(results) <= 2
 
@@ -255,10 +230,7 @@ class TestRetrieveWithCaching:
 
     def test_retrieve_without_cache(self, populated_kernel):
         """Test retrieval with cache disabled."""
-        results = populated_kernel.retrieve_nodes(
-            query="python",
-            use_cache=False
-        )
+        results = populated_kernel.retrieve_nodes(query="python", use_cache=False)
 
         assert len(results) > 0
 
@@ -270,7 +242,7 @@ class TestCacheManagement:
         """Test cache stats when empty."""
         stats = enhanced_kernel.get_cache_stats()
 
-        assert 'embedding' in stats or 'query' in stats
+        assert "embedding" in stats or "query" in stats
 
     def test_get_cache_stats_after_queries(self, populated_kernel):
         """Test cache stats after queries."""
@@ -281,9 +253,9 @@ class TestCacheManagement:
 
         stats = populated_kernel.get_cache_stats()
 
-        if 'query' in stats:
-            assert stats['query']['hits'] > 0
-            assert stats['query']['misses'] > 0
+        if "query" in stats:
+            assert stats["query"]["hits"] > 0
+            assert stats["query"]["misses"] > 0
 
     def test_clear_query_cache(self, populated_kernel):
         """Test clearing query cache."""
@@ -298,9 +270,9 @@ class TestCacheManagement:
         stats_after = populated_kernel.get_cache_stats()
 
         # Cache should have been cleared and repopulated
-        if 'query' in stats_after:
+        if "query" in stats_after:
             # After clear, we should have at least one miss from the new query
-            assert stats_after['query']['misses'] > 0
+            assert stats_after["query"]["misses"] > 0
 
     def test_clear_all_caches(self, populated_kernel):
         """Test clearing all caches."""
@@ -313,11 +285,11 @@ class TestCacheManagement:
         # Caches should be empty
         stats = populated_kernel.get_cache_stats()
         # After clear, stats should show 0 hits
-        if 'query' in stats:
+        if "query" in stats:
             # New queries after clear
             populated_kernel.retrieve_nodes("test")
             new_stats = populated_kernel.get_cache_stats()
-            assert new_stats['query']['misses'] > 0
+            assert new_stats["query"]["misses"] > 0
 
 
 class TestIngestWithProgress:
@@ -373,10 +345,7 @@ class TestErrorHandling:
 
     def test_remember_with_validation_disabled(self, temp_vault):
         """Test remember with validation disabled."""
-        kernel = EnhancedMemoryKernel(
-            vault_path=str(temp_vault),
-            validate_inputs=False
-        )
+        kernel = EnhancedMemoryKernel(vault_path=str(temp_vault), validate_inputs=False)
 
         # Note: Base kernel still validates salience range
         # Enhanced validation is disabled, but base validation remains
@@ -384,7 +353,7 @@ class TestErrorHandling:
         path = kernel.remember(
             title="Test",
             content="Content",
-            salience=0.8  # Valid value
+            salience=0.8,  # Valid value
         )
 
         assert Path(path).exists()
@@ -393,10 +362,7 @@ class TestErrorHandling:
         """Test retrieve with validation disabled."""
         import contextlib
 
-        kernel = EnhancedMemoryKernel(
-            vault_path=str(temp_vault),
-            validate_inputs=False
-        )
+        kernel = EnhancedMemoryKernel(vault_path=str(temp_vault), validate_inputs=False)
 
         # Should not raise validation error for empty query
         # (though it might not return useful results)
@@ -423,9 +389,9 @@ class TestPerformanceImprovements:
 
         # Check cache stats to verify hit
         stats = populated_kernel.get_cache_stats()
-        if 'query' in stats:
-            assert stats['query']['hits'] > 0
-            assert stats['query']['hit_rate'] > 0
+        if "query" in stats:
+            assert stats["query"]["hits"] > 0
+            assert stats["query"]["hit_rate"] > 0
 
     def test_multiple_queries_cache_efficiency(self, populated_kernel):
         """Test cache efficiency with multiple queries."""
@@ -442,10 +408,10 @@ class TestPerformanceImprovements:
 
         stats = populated_kernel.get_cache_stats()
 
-        if 'query' in stats:
+        if "query" in stats:
             # Should have some cache hits from repeated queries
-            assert stats['query']['hits'] >= 2
-            assert stats['query']['hit_rate'] > 0
+            assert stats["query"]["hits"] >= 2
+            assert stats["query"]["hit_rate"] > 0
 
 
 class TestBackwardCompatibility:
@@ -454,11 +420,11 @@ class TestBackwardCompatibility:
     def test_base_kernel_methods_available(self, enhanced_kernel):
         """Test that base kernel methods are still available."""
         # Should have all base kernel methods
-        assert hasattr(enhanced_kernel, 'remember')
-        assert hasattr(enhanced_kernel, 'retrieve_nodes')
-        assert hasattr(enhanced_kernel, 'ingest')
-        assert hasattr(enhanced_kernel, 'graph')
-        assert hasattr(enhanced_kernel, 'vault_path')
+        assert hasattr(enhanced_kernel, "remember")
+        assert hasattr(enhanced_kernel, "retrieve_nodes")
+        assert hasattr(enhanced_kernel, "ingest")
+        assert hasattr(enhanced_kernel, "graph")
+        assert hasattr(enhanced_kernel, "vault_path")
 
     def test_can_use_as_base_kernel(self, enhanced_kernel):
         """Test that enhanced kernel can be used as base kernel."""

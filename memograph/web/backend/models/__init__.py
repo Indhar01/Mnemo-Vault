@@ -2,11 +2,13 @@
 
 from datetime import datetime
 from typing import Any, Optional
+
 from pydantic import BaseModel, Field, validator
 
 
 class MemoryResponse(BaseModel):
     """Response model for a single memory."""
+
     id: str
     title: str
     content: str
@@ -35,13 +37,14 @@ class MemoryResponse(BaseModel):
                 "created_at": "2026-03-20T10:00:00Z",
                 "modified_at": "2026-03-22T15:00:00Z",
                 "links": ["performance-optimization"],
-                "backlinks": ["python-best-practices"]
+                "backlinks": ["python-best-practices"],
             }
         }
 
 
 class MemoryListResponse(BaseModel):
     """Response model for memory list."""
+
     memories: list[MemoryResponse]
     total: int
     page: int
@@ -51,6 +54,7 @@ class MemoryListResponse(BaseModel):
 
 class CreateMemoryRequest(BaseModel):
     """Request model for creating a new memory."""
+
     title: str = Field(..., min_length=1, max_length=500)
     content: str = Field(..., min_length=1)
     memory_type: str = Field(default="fact", pattern="^(episodic|semantic|procedural|fact)$")
@@ -58,13 +62,14 @@ class CreateMemoryRequest(BaseModel):
     salience: float = Field(default=0.5, ge=0.0, le=1.0)
     meta: Optional[dict[str, Any]] = None
 
-    @validator('tags')
+    @validator("tags")
     def validate_tags(cls, v):
-        return [tag.strip().lstrip('#') for tag in v if tag.strip()]
+        return [tag.strip().lstrip("#") for tag in v if tag.strip()]
 
 
 class UpdateMemoryRequest(BaseModel):
     """Request model for updating a memory."""
+
     content: Optional[str] = None
     tags: Optional[list[str]] = None
     salience: Optional[float] = Field(None, ge=0.0, le=1.0)
@@ -73,6 +78,7 @@ class UpdateMemoryRequest(BaseModel):
 
 class SearchRequest(BaseModel):
     """Request model for search."""
+
     query: str = Field(..., min_length=1)
     tags: Optional[list[str]] = None
     memory_type: Optional[str] = None
@@ -85,6 +91,7 @@ class SearchRequest(BaseModel):
 
 class SearchResponse(BaseModel):
     """Response model for search results."""
+
     query: str
     results: list[MemoryResponse]
     total: int
@@ -93,6 +100,7 @@ class SearchResponse(BaseModel):
 
 class GraphNode(BaseModel):
     """Graph node representation."""
+
     id: str
     title: str
     memory_type: str
@@ -104,6 +112,7 @@ class GraphNode(BaseModel):
 
 class GraphEdge(BaseModel):
     """Graph edge representation."""
+
     source: str
     target: str
     type: str = "wikilink"
@@ -111,6 +120,7 @@ class GraphEdge(BaseModel):
 
 class GraphResponse(BaseModel):
     """Response model for graph data."""
+
     nodes: list[GraphNode]
     edges: list[GraphEdge]
     total_nodes: int
@@ -119,6 +129,7 @@ class GraphResponse(BaseModel):
 
 class AnalyticsResponse(BaseModel):
     """Response model for analytics."""
+
     total_memories: int
     memory_type_distribution: dict[str, int]
     tag_distribution: dict[str, int]
@@ -131,6 +142,7 @@ class AnalyticsResponse(BaseModel):
 
 class HealthResponse(BaseModel):
     """Health check response."""
+
     status: str
     version: str
     vault_path: str
@@ -142,6 +154,7 @@ class HealthResponse(BaseModel):
 
 class ErrorResponse(BaseModel):
     """Error response model."""
+
     error: str
     detail: Optional[str] = None
     code: Optional[str] = None

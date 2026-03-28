@@ -26,18 +26,18 @@ def get_project_root() -> Path:
 
 def create_wrapper_script(vault_path: str) -> Path:
     """Create a wrapper script that ensures correct Python environment.
-    
+
     Args:
         vault_path: Path to the MemoGraph vault
-        
+
     Returns:
         Path to the created wrapper script
     """
     project_root = get_project_root()
     python_exe = get_python_executable()
-    
+
     system = platform.system()
-    
+
     if system == "Windows":
         wrapper_path = project_root / "run_memograph_mcp.bat"
         content = f"""@echo off
@@ -51,7 +51,7 @@ REM Use the Python that has memograph installed
 """
         wrapper_path.write_text(content, encoding="utf-8")
         print(f"✓ Created wrapper script: {wrapper_path}")
-        
+
     else:  # macOS/Linux
         wrapper_path = project_root / "run_memograph_mcp.sh"
         content = f"""#!/bin/bash
@@ -67,21 +67,21 @@ cd "{project_root}"
         # Make executable
         wrapper_path.chmod(0o755)
         print(f"✓ Created wrapper script: {wrapper_path}")
-    
+
     return wrapper_path
 
 
 def get_config_path(client: str) -> Path | None:
     """Get configuration file path for a specific MCP client.
-    
+
     Args:
         client: Client name (claude, cline, bob)
-        
+
     Returns:
         Path to config file or None if not found
     """
     system = platform.system()
-    
+
     if client == "claude":
         if system == "Darwin":  # macOS
             return Path.home() / "Library/Application Support/Claude/claude_desktop_config.json"
@@ -91,7 +91,7 @@ def get_config_path(client: str) -> Path | None:
                 return Path(appdata) / "Claude/claude_desktop_config.json"
         elif system == "Linux":
             return Path.home() / ".config/Claude/claude_desktop_config.json"
-            
+
     elif client == "cline":
         # Try common locations
         paths = [
@@ -102,12 +102,12 @@ def get_config_path(client: str) -> Path | None:
             if path.parent.exists():
                 return path
         return paths[0]  # Default
-        
+
     elif client == "bob":
         # Bob-Shell MCP config location
         bob_config = Path.home() / ".bob/mcp_settings.json"
         return bob_config
-    
+
     return None
 
 
@@ -119,14 +119,14 @@ def create_mcp_config(
     model: str | None = None,
 ) -> dict:
     """Create MCP configuration for a specific client.
-    
+
     Args:
         client: Client name (claude, cline, bob)
         vault_path: Path to MemoGraph vault
         use_wrapper: If True, use wrapper script; if False, use direct Python path
         provider: Optional LLM provider (ollama, claude, openai)
         model: Optional model name
-        
+
     Returns:
         Configuration dictionary
     """
@@ -137,13 +137,13 @@ def create_mcp_config(
     else:
         command = get_python_executable()
         args = ["-m", "memograph.mcp.run_server"]
-    
+
     env = {"MEMOGRAPH_VAULT": vault_path}
     if provider:
         env["MEMOGRAPH_PROVIDER"] = provider
     if model:
         env["MEMOGRAPH_MODEL"] = model
-    
+
     if client == "claude":
         return {
             "mcpServers": {
@@ -166,39 +166,39 @@ def create_mcp_config(
                 }
             }
         }
-    
+
     return {}
 
 
 def merge_config(existing: dict, new: dict) -> dict:
     """Deep merge new config into existing config.
-    
+
     Args:
         existing: Existing configuration
         new: New configuration to merge
-        
+
     Returns:
         Merged configuration
     """
     result = existing.copy()
-    
+
     for key, value in new.items():
         if key in result and isinstance(result[key], dict) and isinstance(value, dict):
             result[key] = merge_config(result[key], value)
         else:
             result[key] = value
-    
+
     return result
 
 
 def write_config(client: str, config: dict, backup: bool = True) -> bool:
     """Write configuration to client config file.
-    
+
     Args:
         client: Client name
         config: Configuration dictionary
         backup: If True, backup existing config
-        
+
     Returns:
         True if successful, False otherwise
     """
@@ -206,17 +206,18 @@ def write_config(client: str, config: dict, backup: bool = True) -> bool:
     if not config_path:
         print(f"✗ Could not determine config path for {client}")
         return False
-    
+
     # Create parent directory if needed
     config_path.parent.mkdir(parents=True, exist_ok=True)
-    
+
     # Backup existing config
     if backup and config_path.exists():
         backup_path = config_path.with_suffix(".json.backup")
         import shutil
+
         shutil.copy2(config_path, backup_path)
         print(f"✓ Backed up existing config to: {backup_path}")
-    
+
     # Load and merge with existing config
     existing = {}
     if config_path.exists():
@@ -225,10 +226,10 @@ def write_config(client: str, config: dict, backup: bool = True) -> bool:
                 existing = json.load(f)
         except (OSError, json.JSONDecodeError) as e:
             print(f"⚠ Warning: Could not read existing config: {e}")
-    
+
     # Merge configurations
     final_config = merge_config(existing, config)
-    
+
     # Write config
     try:
         with open(config_path, "w", encoding="utf-8") as f:
@@ -242,21 +243,22 @@ def write_config(client: str, config: dict, backup: bool = True) -> bool:
 
 def verify_setup() -> dict:
     """Verify MCP setup.
-    
+
     Returns:
         Dictionary with verification results
     """
     results = {}
-    
+
     # Check Python
     results["python"] = {
         "path": sys.executable,
         "version": f"{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}",
     }
-    
+
     # Check memograph installation
     try:
         import memograph
+
         results["memograph"] = {
             "installed": True,
             "version": getattr(memograph, "__version__", "unknown"),
@@ -267,10 +269,11 @@ def verify_setup() -> dict:
             "installed": False,
             "error": "Not installed",
         }
-    
+
     # Check MCP SDK
     try:
         import mcp
+
         results["mcp_sdk"] = {
             "installed": True,
             "version": getattr(mcp, "__version__", "unknown"),
@@ -280,7 +283,7 @@ def verify_setup() -> dict:
             "installed": False,
             "error": "Not installed - run: pip install mcp",
         }
-    
+
     # Test server module
     try:
         result = subprocess.run(
@@ -298,7 +301,7 @@ def verify_setup() -> dict:
             "working": False,
             "error": str(e),
         }
-    
+
     return results
 
 
@@ -307,12 +310,12 @@ def print_verification(results: dict) -> None:
     print("\n" + "=" * 60)
     print("MemoGraph MCP Setup Verification")
     print("=" * 60)
-    
+
     # Python
     python = results["python"]
     print(f"\n[OK] Python {python['version']}")
     print(f"     Path: {python['path']}")
-    
+
     # MemoGraph
     memograph = results["memograph"]
     if memograph["installed"]:
@@ -320,28 +323,28 @@ def print_verification(results: dict) -> None:
         print(f"     Path: {memograph['path']}")
     else:
         print(f"\n[FAIL] MemoGraph: {memograph['error']}")
-    
+
     # MCP SDK
     mcp_sdk = results["mcp_sdk"]
     if mcp_sdk["installed"]:
         print(f"\n[OK] MCP SDK v{mcp_sdk['version']}")
     else:
         print(f"\n[FAIL] MCP SDK: {mcp_sdk['error']}")
-    
+
     # Server
     server = results["server"]
     if server["working"]:
         print("\n[OK] MCP Server module working")
     else:
         print(f"\n[FAIL] MCP Server: {server.get('error', 'Unknown error')}")
-    
+
     print("\n" + "=" * 60)
 
 
 def main():
     """Main entry point."""
     import argparse
-    
+
     parser = argparse.ArgumentParser(
         description="Setup MemoGraph MCP server with proper path resolution"
     )
@@ -375,37 +378,37 @@ def main():
         action="store_true",
         help="Only verify setup, don't configure",
     )
-    
+
     args = parser.parse_args()
-    
+
     print("🔧 MemoGraph MCP Setup")
     print("=" * 60)
-    
+
     # Verify setup first
     results = verify_setup()
     print_verification(results)
-    
+
     if args.verify_only:
         return
-    
+
     # Check if memograph is installed
     if not results["memograph"]["installed"]:
         print("\n❌ MemoGraph is not installed!")
         print("   Run: pip install -e .")
         sys.exit(1)
-    
+
     # Create vault if it doesn't exist
     vault_path = Path(args.vault).expanduser()
     if not vault_path.exists():
         print(f"\n📁 Creating vault at: {vault_path}")
         vault_path.mkdir(parents=True, exist_ok=True)
-    
+
     # Configure clients
     clients = ["claude", "cline", "bob"] if args.client == "all" else [args.client]
-    
+
     print(f"\n⚙️  Configuring {len(clients)} client(s)...")
     success_count = 0
-    
+
     for client in clients:
         print(f"\n{client.upper()}:")
         config = create_mcp_config(
@@ -415,10 +418,10 @@ def main():
             provider=args.provider,
             model=args.model,
         )
-        
+
         if write_config(client, config):
             success_count += 1
-    
+
     # Summary
     print("\n" + "=" * 60)
     if success_count == len(clients):

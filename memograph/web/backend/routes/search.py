@@ -9,21 +9,21 @@ All endpoints use structured error handling with helpful error messages
 and actionable suggestions for resolution.
 """
 
-import time
-from fastapi import APIRouter, Request, Query
-from typing import Optional
 import logging
+import time
 
-from ..models import SearchRequest, SearchResponse, MemoryResponse
+from fastapi import APIRouter, Query, Request
+
 from ..errors import (
-    MemoGraphError,
     ErrorCode,
-    kernel_not_initialized_error,
+    MemoGraphError,
     invalid_query_error,
+    kernel_not_initialized_error,
+    search_timeout_error,
     validate_query,
     validate_salience,
-    search_timeout_error,
 )
+from ..models import MemoryResponse, SearchRequest, SearchResponse
 
 # Initialize logger for this module
 logger = logging.getLogger("memograph.api.search")
@@ -36,29 +36,26 @@ SEARCH_TIMEOUT = 30.0
 
 
 @router.post("/search", response_model=SearchResponse)
-async def search_memories(
-    search_req: SearchRequest,
-    request: Request
-):
+async def search_memories(search_req: SearchRequest, request: Request):
     """
     Search memories using hybrid retrieval (keyword + semantic + graph).
-    
+
     This endpoint supports multiple search strategies:
     - keyword: BM25-style keyword matching
     - semantic: Embedding-based semantic search
     - hybrid: Combined keyword + semantic (default)
     - graph: Graph traversal based on wikilinks
-    
+
     Args:
         search_req: Search request with query and filters
         request: FastAPI request object (injected)
-        
+
     Returns:
         SearchResponse with matching memories and metadata
-        
+
     Raises:
         MemoGraphError: If validation fails or search fails
-        
+
     Example:
         POST /api/search
         {
@@ -73,42 +70,48 @@ async def search_memories(
         validate_query(search_req.query)
     except MemoGraphError:
         raise
-    
+
     # Get kernel instance from app state
-    kernel = getattr(request.app.state, 'kernel', None)
+    kernel = getattr(request.app.state, "kernel", None)
     if not kernel:
         raise kernel_not_initialized_error()
-    
+
     start_time = time.time()
-    
+
     try:
-        logger.info(f"Search request: query='{search_req.query}', tags={search_req.tags}, top_k={search_req.top_k}")
-        
+        logger.info(
+            f"Search request: query='{search_req.query}', tags={search_req.tags}, top_k={search_req.top_k}"
+        )
+
         # Build query
         query_builder = kernel.query().search(search_req.query)
-        
+
         if search_req.tags:
             query_builder = query_builder.with_tags(search_req.tags)
-        
+
         if search_req.min_salience > 0:
             # Validate salience value
             validate_salience(search_req.min_salience)
             query_builder = query_builder.min_salience(search_req.min_salience)
-        
+
         query_builder = query_builder.depth(search_req.depth).limit(search_req.top_k)
-        
+
         # Execute search with timeout check
         results = await query_builder.execute_async()
-        
+
         execution_time = time.time() - start_time
-        
+
         # Check if search exceeded timeout
         if execution_time > SEARCH_TIMEOUT:
-            logger.warning(f"Search took {execution_time:.2f}s (exceeded {SEARCH_TIMEOUT}s timeout)")
+            logger.warning(
+                f"Search took {execution_time:.2f}s (exceeded {SEARCH_TIMEOUT}s timeout)"
+            )
             raise search_timeout_error(search_req.query, SEARCH_TIMEOUT)
-        
-        logger.info(f"Search completed: found {len(results)} results in {execution_time*1000:.2f}ms")
-        
+
+        logger.info(
+            f"Search completed: found {len(results)} results in {execution_time*1000:.2f}ms"
+        )
+
         # Convert to response models
         memory_responses = [
             MemoryResponse(
@@ -124,20 +127,20 @@ async def search_memories(
                 modified_at=node.modified_at.isoformat(),
                 links=node.links,
                 backlinks=node.backlinks,
-                source_path=node.source_path
+                source_path=node.source_path,
             )
             for node in results
         ]
-        
+
         execution_time_ms = execution_time * 1000
-        
+
         return SearchResponse(
             query=search_req.query,
             results=memory_responses,
             total=len(memory_responses),
-            execution_time_ms=round(execution_time_ms, 2)
+            execution_time_ms=round(execution_time_ms, 2),
         )
-        
+
     except MemoGraphError:
         # Re-raise structured errors
         raise
@@ -155,10 +158,10 @@ async def search_memories(
                 "Reduce the number of results (top_k parameter)",
                 "Check that the vault is indexed correctly",
                 "Verify vault health with GET /api/health",
-                "Check server logs for detailed error information"
+                "Check server logs for detailed error information",
             ],
             status_code=500,
-            query=search_req.query
+            query=search_req.query,
         )
 
 
@@ -166,28 +169,28 @@ async def search_memories(
 async def autocomplete(
     q: str = Query(..., min_length=1, description="Query string for autocomplete"),
     limit: int = Query(10, ge=1, le=50, description="Maximum number of suggestions"),
-    request: Request = None
+    request: Request = None,
 ):
     """
     Autocomplete suggestions based on memory titles and tags.
-    
+
     Provides real-time suggestions as users type in the search box.
     Searches both memory titles and tags for matches.
-    
+
     Args:
         q: Query string (minimum 1 character)
         limit: Maximum number of suggestions to return (1-50)
         request: FastAPI request object (injected)
-        
+
     Returns:
         Dictionary with autocomplete suggestions
-        
+
     Raises:
         MemoGraphError: If validation fails or autocomplete fails
-        
+
     Example:
         GET /api/search/autocomplete?q=pyth&limit=10
-        
+
         Response:
         {
             "suggestions": [
@@ -207,56 +210,57 @@ async def autocomplete(
     # Validate query
     if not q or not q.strip():
         raise invalid_query_error(q, "Autocomplete query cannot be empty")
-    
+
     # Get kernel instance from app state
-    kernel = getattr(request.app.state, 'kernel', None)
+    kernel = getattr(request.app.state, "kernel", None)
     if not kernel:
         raise kernel_not_initialized_error()
-    
+
     try:
         logger.debug(f"Autocomplete request: q='{q}', limit={limit}")
-        
+
         # Get all nodes
         all_nodes = kernel.graph.all_nodes()
-        
+
         q_lower = q.lower()
         suggestions = []
-        
+
         # Search in titles
         for node in all_nodes:
             if q_lower in node.title.lower():
-                suggestions.append({
-                    "type": "memory",
-                    "value": node.title,
-                    "id": node.id,
-                    "salience": node.salience
-                })
-        
+                suggestions.append(
+                    {
+                        "type": "memory",
+                        "value": node.title,
+                        "id": node.id,
+                        "salience": node.salience,
+                    }
+                )
+
         # Search in tags
         all_tags = set()
         for node in all_nodes:
             all_tags.update(node.tags)
-        
+
         for tag in all_tags:
             if q_lower in tag.lower():
-                suggestions.append({
-                    "type": "tag",
-                    "value": tag
-                })
-        
+                suggestions.append({"type": "tag", "value": tag})
+
         # Sort by relevance and limit
         # Memories with higher salience come first, then tags
-        suggestions.sort(key=lambda x: (
-            x["type"] == "tag",  # Tags come after memories
-            -x.get("salience", 0)  # Higher salience first
-        ))
-        
+        suggestions.sort(
+            key=lambda x: (
+                x["type"] == "tag",  # Tags come after memories
+                -x.get("salience", 0),  # Higher salience first
+            )
+        )
+
         limited_suggestions = suggestions[:limit]
-        
+
         logger.debug(f"Autocomplete completed: {len(limited_suggestions)} suggestions")
-        
+
         return {"suggestions": limited_suggestions}
-        
+
     except MemoGraphError:
         # Re-raise structured errors
         raise
@@ -270,8 +274,8 @@ async def autocomplete(
                 "Try a different query",
                 "Check that the vault is indexed",
                 "Verify vault health with GET /api/health",
-                "Check server logs for detailed error information"
+                "Check server logs for detailed error information",
             ],
             status_code=500,
-            query=q
+            query=q,
         )

@@ -112,11 +112,7 @@ class TestPathValidation:
         test_file.touch()
 
         with pytest.raises(ValidationError) as exc_info:
-            validate_path(
-                test_file,
-                must_exist=True,
-                allowed_extensions=['.md', '.markdown']
-            )
+            validate_path(test_file, must_exist=True, allowed_extensions=[".md", ".markdown"])
 
         assert "invalid file extension" in str(exc_info.value).lower()
 
@@ -310,9 +306,7 @@ class TestCustomExceptions:
     def test_memograph_error(self):
         """Test base MemoGraphError."""
         error = MemoGraphError(
-            "Something went wrong",
-            suggestion="Try this fix",
-            context={'key': 'value'}
+            "Something went wrong", suggestion="Try this fix", context={"key": "value"}
         )
 
         error_str = str(error)
@@ -322,20 +316,14 @@ class TestCustomExceptions:
 
     def test_validation_error(self):
         """Test ValidationError."""
-        error = ValidationError(
-            "Invalid input",
-            suggestion="Use valid input"
-        )
+        error = ValidationError("Invalid input", suggestion="Use valid input")
 
         assert isinstance(error, MemoGraphError)
         assert "Invalid input" in str(error)
 
     def test_security_error(self):
         """Test SecurityError."""
-        error = SecurityError(
-            "Security violation",
-            suggestion="Check permissions"
-        )
+        error = SecurityError("Security violation", suggestion="Check permissions")
 
         assert isinstance(error, MemoGraphError)
         assert "Security violation" in str(error)

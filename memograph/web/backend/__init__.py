@@ -1,1 +1,1 @@
-"""MemoGraph Web Backend.""" 
+"""MemoGraph Web Backend."""

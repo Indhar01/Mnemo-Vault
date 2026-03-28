@@ -49,10 +49,10 @@ class MemoGraphMCPServer:
         self.kernel = MemoryKernel(str(self.vault_path))
         self.llm_provider = llm_provider
         self.llm_model = llm_model
-        
+
         # Initialize autonomous hooks (can be enabled/disabled via configuration)
         self.autonomous_hooks = AutonomousHooks(self)
-        
+
         # Check if autonomous mode is enabled via environment variable
         auto_mode = os.environ.get("MEMOGRAPH_AUTONOMOUS_MODE", "false").lower() == "true"
         if auto_mode:
@@ -200,19 +200,23 @@ class MemoGraphMCPServer:
                 for node in results
             ]
 
-            return self._add_vault_context({
-                "success": True,
-                "count": len(formatted_results),
-                "results": formatted_results,
-            })
+            return self._add_vault_context(
+                {
+                    "success": True,
+                    "count": len(formatted_results),
+                    "results": formatted_results,
+                }
+            )
 
         except Exception as e:
             logger.error(f"Error searching vault: {e}")
-            return self._add_vault_context({
-                "success": False,
-                "error": str(e),
-                "results": [],
-            })
+            return self._add_vault_context(
+                {
+                    "success": False,
+                    "error": str(e),
+                    "results": [],
+                }
+            )
 
     async def create_memory(
         self,
@@ -244,19 +248,23 @@ class MemoGraphMCPServer:
                 salience=salience,
             )
 
-            return self._add_vault_context({
-                "success": True,
-                "message": f"Created memory: {title}",
-                "path": path,
-                "title": title,
-            })
+            return self._add_vault_context(
+                {
+                    "success": True,
+                    "message": f"Created memory: {title}",
+                    "path": path,
+                    "title": title,
+                }
+            )
 
         except Exception as e:
             logger.error(f"Error creating memory: {e}")
-            return self._add_vault_context({
-                "success": False,
-                "error": str(e),
-            })
+            return self._add_vault_context(
+                {
+                    "success": False,
+                    "error": str(e),
+                }
+            )
 
     async def query_with_context(
         self,
@@ -318,31 +326,37 @@ class MemoGraphMCPServer:
                     stream=False,  # No streaming for MCP
                 )
 
-                return self._add_vault_context({
-                    "success": True,
-                    "answer": answer,
-                    "sources": formatted_sources,
-                    "question": question,
-                    "mode": "generated",
-                })
+                return self._add_vault_context(
+                    {
+                        "success": True,
+                        "answer": answer,
+                        "sources": formatted_sources,
+                        "question": question,
+                        "mode": "generated",
+                    }
+                )
 
             # Otherwise, return context for client's LLM to use
             else:
-                return self._add_vault_context({
-                    "success": True,
-                    "context": context,
-                    "sources": formatted_sources,
-                    "question": question,
-                    "mode": "context_only",
-                    "message": "Use the provided context to answer the question. The context includes relevant memories from the vault with source citations [S1], [S2], etc.",
-                })
+                return self._add_vault_context(
+                    {
+                        "success": True,
+                        "context": context,
+                        "sources": formatted_sources,
+                        "question": question,
+                        "mode": "context_only",
+                        "message": "Use the provided context to answer the question. The context includes relevant memories from the vault with source citations [S1], [S2], etc.",
+                    }
+                )
 
         except Exception as e:
             logger.error(f"Error querying with context: {e}")
-            return self._add_vault_context({
-                "success": False,
-                "error": str(e),
-            })
+            return self._add_vault_context(
+                {
+                    "success": False,
+                    "error": str(e),
+                }
+            )
 
     async def get_vault_stats(self) -> dict[str, Any]:
         """Get statistics about the vault.
@@ -368,23 +382,27 @@ class MemoGraphMCPServer:
             for node in all_nodes:
                 all_tags.update(node.tags)
 
-            return self._add_vault_context({
-                "success": True,
-                "vault_path": str(self.vault_path),
-                "total_memories": stats["total"],
-                "indexed": stats["indexed"],
-                "skipped": stats["skipped"],
-                "by_type": type_counts,
-                "total_tags": len(all_tags),
-                "tags": sorted(all_tags),
-            })
+            return self._add_vault_context(
+                {
+                    "success": True,
+                    "vault_path": str(self.vault_path),
+                    "total_memories": stats["total"],
+                    "indexed": stats["indexed"],
+                    "skipped": stats["skipped"],
+                    "by_type": type_counts,
+                    "total_tags": len(all_tags),
+                    "tags": sorted(all_tags),
+                }
+            )
 
         except Exception as e:
             logger.error(f"Error getting vault stats: {e}")
-            return self._add_vault_context({
-                "success": False,
-                "error": str(e),
-            })
+            return self._add_vault_context(
+                {
+                    "success": False,
+                    "error": str(e),
+                }
+            )
 
     async def list_memories(
         self,
@@ -446,19 +464,23 @@ class MemoGraphMCPServer:
                 for node in nodes
             ]
 
-            return self._add_vault_context({
-                "success": True,
-                "count": len(formatted),
-                "memories": formatted,
-            })
+            return self._add_vault_context(
+                {
+                    "success": True,
+                    "count": len(formatted),
+                    "memories": formatted,
+                }
+            )
 
         except Exception as e:
             logger.error(f"Error listing memories: {e}")
-            return self._add_vault_context({
-                "success": False,
-                "error": str(e),
-                "memories": [],
-            })
+            return self._add_vault_context(
+                {
+                    "success": False,
+                    "error": str(e),
+                    "memories": [],
+                }
+            )
 
     async def get_memory(self, memory_id: str) -> dict[str, Any]:
         """Get full content of a specific memory.
@@ -473,33 +495,39 @@ class MemoGraphMCPServer:
             node = self.kernel.graph.get(memory_id)
 
             if not node:
-                return self._add_vault_context({
-                    "success": False,
-                    "error": f"Memory not found: {memory_id}",
-                })
+                return self._add_vault_context(
+                    {
+                        "success": False,
+                        "error": f"Memory not found: {memory_id}",
+                    }
+                )
 
-            return self._add_vault_context({
-                "success": True,
-                "memory": {
-                    "id": node.id,
-                    "title": node.title,
-                    "content": node.content,
-                    "memory_type": node.memory_type.value,
-                    "tags": node.tags,
-                    "links": node.links,
-                    "backlinks": node.backlinks,
-                    "salience": node.salience,
-                    "created_at": node.created_at.isoformat() if node.created_at else None,
-                    "modified_at": node.modified_at.isoformat() if node.modified_at else None,
-                },
-            })
+            return self._add_vault_context(
+                {
+                    "success": True,
+                    "memory": {
+                        "id": node.id,
+                        "title": node.title,
+                        "content": node.content,
+                        "memory_type": node.memory_type.value,
+                        "tags": node.tags,
+                        "links": node.links,
+                        "backlinks": node.backlinks,
+                        "salience": node.salience,
+                        "created_at": node.created_at.isoformat() if node.created_at else None,
+                        "modified_at": node.modified_at.isoformat() if node.modified_at else None,
+                    },
+                }
+            )
 
         except Exception as e:
             logger.error(f"Error getting memory: {e}")
-            return self._add_vault_context({
-                "success": False,
-                "error": str(e),
-            })
+            return self._add_vault_context(
+                {
+                    "success": False,
+                    "error": str(e),
+                }
+            )
 
     async def import_document(
         self,
@@ -532,17 +560,21 @@ class MemoGraphMCPServer:
                 overwrite=False,
             )
 
-            return self._add_vault_context({
-                "success": success,
-                "message": message,
-            })
+            return self._add_vault_context(
+                {
+                    "success": success,
+                    "message": message,
+                }
+            )
 
         except Exception as e:
             logger.error(f"Error importing document: {e}")
-            return self._add_vault_context({
-                "success": False,
-                "error": str(e),
-            })
+            return self._add_vault_context(
+                {
+                    "success": False,
+                    "error": str(e),
+                }
+            )
 
     async def delete_memory(self, memory_id: str) -> dict[str, Any]:
         """Delete a memory from the vault.
@@ -562,10 +594,12 @@ class MemoGraphMCPServer:
                     break
 
             if not memory_path or not memory_path.exists():
-                return self._add_vault_context({
-                    "success": False,
-                    "error": f"Memory not found: {memory_id}",
-                })
+                return self._add_vault_context(
+                    {
+                        "success": False,
+                        "error": f"Memory not found: {memory_id}",
+                    }
+                )
 
             # Get memory info before deletion
             node = self.kernel.graph.get(memory_id)
@@ -580,18 +614,22 @@ class MemoGraphMCPServer:
 
             logger.info(f"Deleted memory: {memory_id}")
 
-            return self._add_vault_context({
-                "success": True,
-                "message": f"Deleted memory: {title}",
-                "memory_id": memory_id,
-            })
+            return self._add_vault_context(
+                {
+                    "success": True,
+                    "message": f"Deleted memory: {title}",
+                    "memory_id": memory_id,
+                }
+            )
 
         except Exception as e:
             logger.error(f"Error deleting memory: {e}")
-            return self._add_vault_context({
-                "success": False,
-                "error": str(e),
-            })
+            return self._add_vault_context(
+                {
+                    "success": False,
+                    "error": str(e),
+                }
+            )
 
     async def update_memory(
         self,
@@ -679,18 +717,22 @@ class MemoGraphMCPServer:
 
             logger.info(f"Updated memory: {memory_id}")
 
-            return self._add_vault_context({
-                "success": True,
-                "message": f"Updated memory: {frontmatter['title']}",
-                "memory_id": memory_id,
-            })
+            return self._add_vault_context(
+                {
+                    "success": True,
+                    "message": f"Updated memory: {frontmatter['title']}",
+                    "memory_id": memory_id,
+                }
+            )
 
         except Exception as e:
             logger.error(f"Error updating memory: {e}")
-            return self._add_vault_context({
-                "success": False,
-                "error": str(e),
-            })
+            return self._add_vault_context(
+                {
+                    "success": False,
+                    "error": str(e),
+                }
+            )
 
     async def list_available_tools(self) -> dict[str, Any]:
         """List all available MCP tools with descriptions.
@@ -721,7 +763,12 @@ class MemoGraphMCPServer:
                     "delete": ["delete_memory"],
                     "analytics": ["get_vault_info", "get_vault_stats"],
                     "discovery": ["list_available_tools"],
-                    "autonomous": ["auto_hook_query", "auto_hook_response", "configure_autonomous_mode", "get_autonomous_config"],
+                    "autonomous": [
+                        "auto_hook_query",
+                        "auto_hook_response",
+                        "configure_autonomous_mode",
+                        "get_autonomous_config",
+                    ],
                 },
             }
         except Exception as e:
@@ -741,15 +788,15 @@ class MemoGraphMCPServer:
         auto_save_query: bool | None = None,
     ) -> dict[str, Any]:
         """Autonomous hook for every user query.
-        
+
         Automatically searches vault and optionally saves the query.
-        
+
         Args:
             user_query: The user's query/question
             conversation_id: Optional conversation ID for tracking
             auto_search: Override auto_search setting
             auto_save_query: Override auto_save_queries setting
-        
+
         Returns:
             Dictionary with context, sources, and actions performed
         """
@@ -769,16 +816,16 @@ class MemoGraphMCPServer:
         auto_save: bool | None = None,
     ) -> dict[str, Any]:
         """Autonomous hook after AI responds.
-        
+
         Saves the complete interaction as a memory.
-        
+
         Args:
             user_query: Original user query
             ai_response: AI's response
             sources_used: List of source memories that were used
             conversation_id: Optional conversation ID
             auto_save: Override auto_save_responses setting
-        
+
         Returns:
             Dictionary with save result
         """
@@ -798,13 +845,13 @@ class MemoGraphMCPServer:
         min_query_length: int | None = None,
     ) -> dict[str, Any]:
         """Configure autonomous hooks settings.
-        
+
         Args:
             auto_search: Enable/disable auto-search
             auto_save_queries: Enable/disable saving queries
             auto_save_responses: Enable/disable saving responses
             min_query_length: Minimum query length to process
-        
+
         Returns:
             Dictionary with updated configuration
         """
@@ -817,7 +864,7 @@ class MemoGraphMCPServer:
 
     async def get_autonomous_config(self) -> dict[str, Any]:
         """Get current autonomous hooks configuration.
-        
+
         Returns:
             Dictionary with current settings and recommendations
         """

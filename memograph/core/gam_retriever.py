@@ -158,7 +158,9 @@ class GAMRetriever(HybridRetriever):
         # Get initial candidates using standard retrieval
         # Pass None for seed_ids to trigger filter path when no seeds provided
         effective_seed_ids = seed_ids if seed_ids else None
-        candidates = super().retrieve(query, effective_seed_ids, tags, None, depth, initial_top_k, 0.0)
+        candidates = super().retrieve(
+            query, effective_seed_ids, tags, None, depth, initial_top_k, 0.0
+        )
 
         if not candidates:
             logger.debug("No candidates found for query: %s", query)
