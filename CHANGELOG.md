@@ -7,7 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.0] - 2026-03-28
+
 ### Added
+- MCP marketplace support with smithery.json
+- 14 MCP tools for AI assistant integration (search, create, read, update, delete, analytics)
+- Autonomous hooks for query and response processing
+- Comprehensive marketplace documentation (MARKETPLACE_QUICKSTART.md)
+- Publishing automation scripts
 - CODE_OF_CONDUCT.md for community guidelines
 - CONTRIBUTING.md with detailed contribution guidelines
 - SECURITY.md for security policy
@@ -18,11 +25,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Enhanced documentation and examples
 
 ### Changed
+- Bumped version to 0.1.0 for marketplace stability
+- Enhanced MCP server with additional tools
 - Improved project structure and organization
 - Enhanced pyproject.toml with better tooling configuration
 - Updated README with badges and better examples
+- Improved documentation for marketplace submission
 
 ### Fixed
+- Version consistency across configuration files
 - Various code quality improvements
 
 ## [0.0.2] - 2026-03-02
@@ -49,6 +60,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Wikilink and backlink support
 - Tag-based filtering
 
-[Unreleased]: https://github.com/Indhar01/MemoGraph/compare/v0.0.2...HEAD
+[Unreleased]: https://github.com/Indhar01/MemoGraph/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/Indhar01/MemoGraph/compare/v0.0.2...v0.1.0
 [0.0.2]: https://github.com/Indhar01/MemoGraph/compare/v0.0.1...v0.0.2
 [0.0.1]: https://github.com/Indhar01/MemoGraph/releases/tag/v0.0.1
