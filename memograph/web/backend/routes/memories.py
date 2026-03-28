@@ -12,28 +12,19 @@ All endpoints use structured error handling with helpful error messages
 and actionable suggestions for resolution.
 """
 
-from fastapi import APIRouter, Request, HTTPException, Query
-from typing import Optional
 import logging
 
-from ..models import (
-    MemoryResponse,
-    MemoryListResponse,
-    CreateMemoryRequest,
-    UpdateMemoryRequest
-)
+from fastapi import APIRouter, HTTPException, Query, Request
+
 from ....core.enums import MemoryType
 from ..errors import (
     MemoGraphError,
-    ErrorCode,
-    memory_not_found_error,
     invalid_memory_type_error,
-    file_system_error,
     kernel_not_initialized_error,
-    validate_memory_id,
     validate_pagination,
     validate_salience,
 )
+from ..models import CreateMemoryRequest, MemoryListResponse, MemoryResponse, UpdateMemoryRequest
 
 # Initialize logger for this module
 logger = logging.getLogger("memograph.api.memories")
@@ -47,11 +38,15 @@ async def list_memories(
     request: Request,
     page: int = Query(1, ge=1, description="Page number (1-indexed)"),
     page_size: int = Query(20, ge=1, le=100, description="Items per page (max 100)"),
-    memory_type: Optional[str] = Query(None, description="Filter by memory type"),
-    tags: Optional[str] = Query(None, description="Comma-separated tags to filter by"),
+    memory_type: str | None = Query(None, description="Filter by memory type"),
+    tags: str | None = Query(None, description="Comma-separated tags to filter by"),
     min_salience: float = Query(0.0, ge=0.0, le=1.0, description="Minimum salience score"),
-    sort_by: str = Query("modified_at", pattern="^(salience|created_at|modified_at|title)$", description="Field to sort by"),
-    order: str = Query("desc", pattern="^(asc|desc)$", description="Sort order (asc or desc)")
+    sort_by: str = Query(
+        "modified_at",
+        pattern="^(salience|created_at|modified_at|title)$",
+        description="Field to sort by",
+    ),
+    order: str = Query("desc", pattern="^(asc|desc)$", description="Sort order (asc or desc)"),
 ):
     """
     List memories with pagination and filtering.
@@ -86,12 +81,14 @@ async def list_memories(
         raise
 
     # Get kernel instance from app state
-    kernel = getattr(request.app.state, 'kernel', None)
+    kernel = getattr(request.app.state, "kernel", None)
     if not kernel:
         raise kernel_not_initialized_error()
 
     try:
-        logger.debug(f"Listing memories: page={page}, page_size={page_size}, memory_type={memory_type}")
+        logger.debug(
+            f"Listing memories: page={page}, page_size={page_size}, memory_type={memory_type}"
+        )
         # Get all nodes from the memory graph
         all_nodes = kernel.graph.all_nodes()
         logger.debug(f"Found {len(all_nodes)} total memories in vault")
@@ -104,6 +101,7 @@ async def list_memories(
             # Validate that the memory type is valid
             try:
                 from ....core.enums import MemoryType
+
                 # This will raise ValueError if invalid
                 MemoryType(memory_type)
             except ValueError:
@@ -117,8 +115,7 @@ async def list_memories(
             tag_list = [t.strip() for t in tags.split(",") if t.strip()]
             if tag_list:
                 filtered_nodes = [
-                    n for n in filtered_nodes
-                    if any(tag in n.tags for tag in tag_list)
+                    n for n in filtered_nodes if any(tag in n.tags for tag in tag_list)
                 ]
                 logger.debug(f"After tags filter ({tag_list}): {len(filtered_nodes)} memories")
 
@@ -126,10 +123,12 @@ async def list_memories(
         if min_salience > 0:
             validate_salience(min_salience)
             filtered_nodes = [n for n in filtered_nodes if n.salience >= min_salience]
-            logger.debug(f"After salience filter (>={min_salience}): {len(filtered_nodes)} memories")
+            logger.debug(
+                f"After salience filter (>={min_salience}): {len(filtered_nodes)} memories"
+            )
 
         # Sort the filtered results
-        reverse = (order == "desc")
+        reverse = order == "desc"
         logger.debug(f"Sorting by {sort_by} ({order})")
 
         if sort_by == "salience":
@@ -165,7 +164,7 @@ async def list_memories(
                 modified_at=node.modified_at.isoformat(),
                 links=node.links,
                 backlinks=node.backlinks,
-                source_path=node.source_path
+                source_path=node.source_path,
             )
             for node in page_nodes
         ]
@@ -176,7 +175,13 @@ async def list_memories(
             total=total,
             page=page,
             page_size=page_size,
-            has_more=(end_idx < total)
+            has_more=(end_idx < total),
+        )
+    except MemoGraphError:
+        raise
+    except Exception as e:
+        logger.error(f"Failed to list memories: {str(e)}", exc_info=True)
+        raise HTTPException(status_code=500, detail=f"Failed to list memories: {str(e)}")
 
 
 @router.get("/memories/{memory_id}", response_model=MemoryResponse)
@@ -202,13 +207,14 @@ async def get_memory(memory_id: str, request: Request):
             modified_at=node.modified_at.isoformat(),
             links=node.links,
             backlinks=node.backlinks,
-            source_path=node.source_path
+            source_path=node.source_path,
         )
 
     except HTTPException:
         raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to get memory: {str(e)}")
+        logger.error(f"Failed to get memory: {str(e)}", exc_info=True)
+        raise HTTPException(status_code=500, detail=f"Failed to retrieve memory: {str(e)}")
 
 
 @router.post("/memories", response_model=dict)
@@ -227,7 +233,7 @@ async def create_memory(memory: CreateMemoryRequest, request: Request):
             memory_type=memory_type_enum,
             tags=memory.tags,
             salience=memory.salience,
-            meta=memory.meta
+            meta=memory.meta,
         )
 
         # Re-ingest to update graph
@@ -235,13 +241,10 @@ async def create_memory(memory: CreateMemoryRequest, request: Request):
 
         # Extract memory ID from file path
         from pathlib import Path
+
         memory_id = Path(file_path).stem
 
-        return {
-            "id": memory_id,
-            "file_path": file_path,
-            "message": "Memory created successfully"
-        }
+        return {"id": memory_id, "file_path": file_path, "message": "Memory created successfully"}
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to create memory: {str(e)}")
@@ -271,8 +274,7 @@ async def update_memory(memory_id: str, update: UpdateMemoryRequest, request: Re
 
         # Update memory
         updated, errors = await kernel.update_many_async(
-            [(memory_id, update_data)],
-            continue_on_error=False
+            [(memory_id, update_data)], continue_on_error=False
         )
 
         if errors:
@@ -281,10 +283,7 @@ async def update_memory(memory_id: str, update: UpdateMemoryRequest, request: Re
         # Re-ingest
         await kernel.ingest_async(force=False)
 
-        return {
-            "id": memory_id,
-            "message": "Memory updated successfully"
-        }
+        return {"id": memory_id, "message": "Memory updated successfully"}
 
     except HTTPException:
         raise
@@ -305,6 +304,7 @@ async def delete_memory(memory_id: str, request: Request):
         # Delete the file
         if node.source_path:
             from pathlib import Path
+
             file_path = Path(node.source_path)
             if file_path.exists():
                 file_path.unlink()
@@ -312,10 +312,7 @@ async def delete_memory(memory_id: str, request: Request):
         # Remove from graph
         kernel.graph.remove_node(memory_id)
 
-        return {
-            "id": memory_id,
-            "message": "Memory deleted successfully"
-        }
+        return {"id": memory_id, "message": "Memory deleted successfully"}
 
     except HTTPException:
         raise

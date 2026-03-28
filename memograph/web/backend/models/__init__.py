@@ -21,7 +21,7 @@ class MemoryResponse(BaseModel):
     modified_at: str
     links: list[str] = []
     backlinks: list[str] = []
-    source_path: Optional[str] = None
+    source_path: str | None = None
 
     class Config:
         schema_extra = {
@@ -60,7 +60,7 @@ class CreateMemoryRequest(BaseModel):
     memory_type: str = Field(default="fact", pattern="^(episodic|semantic|procedural|fact)$")
     tags: list[str] = Field(default_factory=list)
     salience: float = Field(default=0.5, ge=0.0, le=1.0)
-    meta: Optional[dict[str, Any]] = None
+    meta: dict[str, Any] | None = None
 
     @validator("tags")
     def validate_tags(cls, v):
@@ -70,18 +70,18 @@ class CreateMemoryRequest(BaseModel):
 class UpdateMemoryRequest(BaseModel):
     """Request model for updating a memory."""
 
-    content: Optional[str] = None
-    tags: Optional[list[str]] = None
-    salience: Optional[float] = Field(None, ge=0.0, le=1.0)
-    meta: Optional[dict[str, Any]] = None
+    content: str | None = None
+    tags: list[str] | None = None
+    salience: float | None = Field(None, ge=0.0, le=1.0)
+    meta: dict[str, Any] | None = None
 
 
 class SearchRequest(BaseModel):
     """Request model for search."""
 
     query: str = Field(..., min_length=1)
-    tags: Optional[list[str]] = None
-    memory_type: Optional[str] = None
+    tags: list[str] | None = None
+    memory_type: str | None = None
     min_salience: float = Field(default=0.0, ge=0.0, le=1.0)
     depth: int = Field(default=2, ge=0, le=5)
     top_k: int = Field(default=10, ge=1, le=100)
@@ -156,5 +156,5 @@ class ErrorResponse(BaseModel):
     """Error response model."""
 
     error: str
-    detail: Optional[str] = None
-    code: Optional[str] = None
+    detail: str | None = None
+    code: str | None = None

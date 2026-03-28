@@ -11,7 +11,7 @@ Example:
 """
 
 from datetime import datetime
-from typing import Any, Optional
+from typing import Any
 
 from fastapi import APIRouter, HTTPException, Query
 
@@ -20,7 +20,7 @@ from memograph.core.action_logger import ActionLogger, ActionType
 router = APIRouter(prefix="/actions", tags=["actions"])
 
 # This will be set by the main app
-action_logger: Optional[ActionLogger] = None
+action_logger: ActionLogger | None = None
 
 
 def set_action_logger(logger: ActionLogger):
@@ -32,8 +32,8 @@ def set_action_logger(logger: ActionLogger):
 @router.get("")
 async def get_actions(
     limit: int = Query(100, ge=1, le=1000, description="Maximum number of actions to return"),
-    action_type: Optional[ActionType] = Query(None, description="Filter by action type"),
-    memory_id: Optional[str] = Query(None, description="Filter by memory ID"),
+    action_type: ActionType | None = Query(None, description="Filter by action type"),
+    memory_id: str | None = Query(None, description="Filter by memory ID"),
     grouped: bool = Query(False, description="Group consecutive actions"),
 ) -> dict[str, Any]:
     """Get recent actions with optional filtering.
@@ -96,7 +96,7 @@ async def get_action_stats() -> dict[str, Any]:
 
 @router.delete("/clear")
 async def clear_action_history(
-    before_date: Optional[str] = Query(
+    before_date: str | None = Query(
         None, description="Clear actions before this date (ISO format)"
     ),
 ) -> dict[str, Any]:

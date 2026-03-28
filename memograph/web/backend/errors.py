@@ -20,7 +20,6 @@ Error Response Format:
 
 import logging
 from datetime import datetime
-from typing import Optional
 
 from fastapi import Request
 from fastapi.responses import JSONResponse
@@ -108,8 +107,8 @@ class MemoGraphError(Exception):
         self,
         code: str,
         message: str,
-        details: Optional[str] = None,
-        suggestions: Optional[list[str]] = None,
+        details: str | None = None,
+        suggestions: list[str] | None = None,
         status_code: int = 500,
         **extra,
     ):

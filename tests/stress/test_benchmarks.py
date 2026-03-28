@@ -65,9 +65,9 @@ class TestAsyncVsSyncBenchmarks:
 
         # On Windows, async operations may have overhead, so we use a more lenient threshold
         # The benefit of async is in I/O-bound operations, not CPU-bound file creation
-        assert (
-            speedup > 0.5 or async_time < 5.0
-        ), f"Async performance acceptable: {speedup:.2f}x, {async_time:.2f}s"
+        assert speedup > 0.5 or async_time < 5.0, (
+            f"Async performance acceptable: {speedup:.2f}x, {async_time:.2f}s"
+        )
 
     @pytest.mark.asyncio
     async def test_concurrent_queries_speedup(self, tmp_path: Path):
@@ -153,7 +153,7 @@ class TestBatchOperationBenchmarks:
 
         logger.info(f"Batch: {batch_time:.2f}s ({throughput_batch:.1f} ops/s)")
         logger.info(f"Individual: {individual_time:.2f}s ({throughput_individual:.1f} ops/s)")
-        logger.info(f"Speedup: {individual_time/batch_time:.2f}x")
+        logger.info(f"Speedup: {individual_time / batch_time:.2f}x")
 
         # Batch operations may not always be faster due to overhead
         # The real benefit is in reducing code complexity and better error handling
@@ -262,8 +262,8 @@ class TestCachePerformanceBenchmarks:
 
         speedup = miss_time / hit_time if hit_time > 0 else float("inf")
 
-        logger.info(f"Cache miss: {miss_time*1000:.2f}ms")
-        logger.info(f"Cache hit: {hit_time*1000:.2f}ms")
+        logger.info(f"Cache miss: {miss_time * 1000:.2f}ms")
+        logger.info(f"Cache hit: {hit_time * 1000:.2f}ms")
         logger.info(f"Speedup: {speedup:.2f}x")
 
         # Cache may not always provide speedup on Windows due to overhead
@@ -310,7 +310,7 @@ class TestScalabilityBenchmarks:
             query_time = time.time() - start
 
             query_times.append(query_time)
-            logger.info(f"Size {size}: {query_time*1000:.2f}ms")
+            logger.info(f"Size {size}: {query_time * 1000:.2f}ms")
 
         # Check that queries complete successfully
         assert all(t > 0 for t in query_times), "All queries should return results"
@@ -323,6 +323,6 @@ class TestScalabilityBenchmarks:
                 f"Scaling factor: {scaling_factor:.2f}x for {size_factor:.0f}x size increase"
             )
             # Allow up to linear scaling (10x size = 10x time is acceptable)
-            assert (
-                scaling_factor < size_factor * 1.5
-            ), f"Query time scaling too poor: {scaling_factor:.2f}x for {size_factor:.0f}x size"
+            assert scaling_factor < size_factor * 1.5, (
+                f"Query time scaling too poor: {scaling_factor:.2f}x for {size_factor:.0f}x size"
+            )

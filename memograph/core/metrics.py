@@ -25,7 +25,7 @@ from collections import defaultdict, deque
 from contextlib import contextmanager
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Any, Optional
+from typing import Any
 
 
 @dataclass
@@ -38,7 +38,7 @@ class OperationMetrics:
     max_duration_ms: float = 0.0
     error_count: int = 0
     recent_durations: deque[float] = field(default_factory=lambda: deque(maxlen=100))
-    last_execution: Optional[datetime] = None
+    last_execution: datetime | None = None
 
     def record(self, duration_ms: float, success: bool = True):
         """Record an operation execution.
@@ -154,7 +154,7 @@ class MetricsCollector:
             duration_ms = (time.time() - start_time) * 1000
             self.record_operation(operation, duration_ms, success, **metadata)
 
-    def get_operation_stats(self, operation: str) -> Optional[dict[str, Any]]:
+    def get_operation_stats(self, operation: str) -> dict[str, Any] | None:
         """Get statistics for a specific operation.
 
         Args:
@@ -219,7 +219,7 @@ class MetricsCollector:
 
 
 # Global metrics collector instance
-_global_metrics: Optional[MetricsCollector] = None
+_global_metrics: MetricsCollector | None = None
 _metrics_lock = threading.Lock()
 
 

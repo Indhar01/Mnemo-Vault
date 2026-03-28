@@ -26,7 +26,7 @@ import logging.handlers
 import sys
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 
 class JSONFormatter(logging.Formatter):
@@ -93,7 +93,7 @@ class JSONFormatter(logging.Formatter):
 class ContextFilter(logging.Filter):
     """Filter to add context information to log records."""
 
-    def __init__(self, context: Optional[dict[str, Any]] = None):
+    def __init__(self, context: dict[str, Any] | None = None):
         """Initialize context filter.
 
         Args:
@@ -120,7 +120,7 @@ class ContextFilter(logging.Filter):
 
 def setup_logging(
     level: str = "INFO",
-    log_file: Optional[str] = None,
+    log_file: str | None = None,
     rotation_size_mb: int = 10,
     backup_count: int = 5,
     json_format: bool = False,
@@ -227,7 +227,7 @@ class SensitiveDataFilter(logging.Filter):
         return True
 
 
-def get_logger(name: str, context: Optional[dict[str, Any]] = None) -> logging.Logger:
+def get_logger(name: str, context: dict[str, Any] | None = None) -> logging.Logger:
     """Get a logger with optional context.
 
     Args:
@@ -277,7 +277,7 @@ def log_error(
     logger: logging.Logger,
     error: Exception,
     operation: str,
-    context: Optional[dict[str, Any]] = None,
+    context: dict[str, Any] | None = None,
 ) -> None:
     """Log error with context in a structured way.
 

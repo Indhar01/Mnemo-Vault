@@ -28,7 +28,7 @@ Example:
 
 import asyncio
 import logging
-from typing import Any, Optional
+from typing import Any
 
 from memograph.core.kernel_enhanced import EnhancedMemoryKernel
 from memograph.core.node import MemoryNode
@@ -93,7 +93,7 @@ class AsyncMemoryKernel(EnhancedMemoryKernel):
         self,
         title: str,
         content: str,
-        tags: Optional[list[str]] = None,
+        tags: list[str] | None = None,
         salience: float = 0.5,
         **kwargs,
     ) -> str:
@@ -136,7 +136,7 @@ class AsyncMemoryKernel(EnhancedMemoryKernel):
     async def retrieve_nodes_async(
         self,
         query: str,
-        tags: Optional[list[str]] = None,
+        tags: list[str] | None = None,
         depth: int = 2,
         top_k: int = 8,
         use_cache: bool = True,

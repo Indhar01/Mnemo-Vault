@@ -18,7 +18,7 @@ from dataclasses import asdict, dataclass
 from datetime import datetime, timedelta
 from pathlib import Path
 from threading import Lock
-from typing import Any, Optional
+from typing import Any
 
 logger = logging.getLogger("memograph.cache")
 
@@ -62,7 +62,7 @@ class LRUCache:
         self._current_size_bytes = 0
         self.stats = CacheStats()
 
-    def get(self, key: str) -> Optional[Any]:
+    def get(self, key: str) -> Any | None:
         """Get item from cache.
 
         Args:
@@ -84,7 +84,7 @@ class LRUCache:
             logger.debug(f"Cache miss: {key}")
             return None
 
-    def put(self, key: str, value: Any, size_bytes: Optional[int] = None):
+    def put(self, key: str, value: Any, size_bytes: int | None = None):
         """Put item in cache.
 
         Args:
@@ -160,7 +160,7 @@ class DiskCache:
         self._metadata_file = self.cache_dir / "_metadata.json"
         self._metadata = self._load_metadata()
 
-    def get(self, key: str) -> Optional[Any]:
+    def get(self, key: str) -> Any | None:
         """Get item from disk cache.
 
         Args:
@@ -297,7 +297,7 @@ class MultiLevelCache:
         """
         self.memory_cache = LRUCache(max_size=memory_max_size, max_memory_mb=memory_max_mb)
 
-        self.disk_cache: Optional[DiskCache] = None
+        self.disk_cache: DiskCache | None = None
         if enable_disk_cache:
             self.disk_cache = DiskCache(cache_dir)
 
@@ -307,7 +307,7 @@ class MultiLevelCache:
             f"disk={'enabled' if enable_disk_cache else 'disabled'}"
         )
 
-    def get(self, key: str) -> Optional[Any]:
+    def get(self, key: str) -> Any | None:
         """Get item from cache (memory first, then disk).
 
         Args:
@@ -331,7 +331,7 @@ class MultiLevelCache:
 
         return None
 
-    def put(self, key: str, value: Any, size_bytes: Optional[int] = None):
+    def put(self, key: str, value: Any, size_bytes: int | None = None):
         """Put item in cache (both memory and disk).
 
         Args:
@@ -413,7 +413,7 @@ class QueryResultCache:
         self._lock = Lock()
         self.stats = CacheStats()
 
-    def get(self, query: str) -> Optional[Any]:
+    def get(self, query: str) -> Any | None:
         """Get cached query results.
 
         Args:

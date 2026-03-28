@@ -25,7 +25,7 @@ Example:
 
 import asyncio
 import logging
-from typing import Any, Optional
+from typing import Any
 
 from memograph.core.access_tracker import AccessTracker
 from memograph.core.gam_retriever import GAMRetriever
@@ -82,7 +82,7 @@ class GAMAsyncKernel(BatchMemoryKernel):
         self,
         vault_path: str,
         enable_gam: bool = False,
-        gam_config: Optional[dict[str, Any]] = None,
+        gam_config: dict[str, Any] | None = None,
         **kwargs,
     ):
         """Initialize GAM async kernel.
@@ -129,7 +129,7 @@ class GAMAsyncKernel(BatchMemoryKernel):
     async def retrieve_nodes_async(
         self,
         query: str,
-        tags: Optional[list[str]] = None,
+        tags: list[str] | None = None,
         depth: int = 2,
         top_k: int = 8,
         use_cache: bool = True,
@@ -208,7 +208,7 @@ class GAMAsyncKernel(BatchMemoryKernel):
     async def retrieve_batch_async(
         self,
         queries: list[str],
-        tags: Optional[list[str]] = None,
+        tags: list[str] | None = None,
         depth: int = 2,
         top_k: int = 8,
         deduplicate: bool = True,
@@ -296,7 +296,7 @@ class GAMAsyncKernel(BatchMemoryKernel):
             )
 
     async def _retrieve_with_query_gam(
-        self, query: str, tags: Optional[list[str]], depth: int, top_k: int
+        self, query: str, tags: list[str] | None, depth: int, top_k: int
     ) -> tuple:
         """Helper for GAM retrieval with query tuple."""
         nodes = await self.retrieve_nodes_async(
@@ -424,7 +424,7 @@ async def create_gam_async_kernel(
     enable_cache: bool = True,
     enable_gam: bool = True,
     max_concurrent: int = 10,
-    gam_config: Optional[dict[str, Any]] = None,
+    gam_config: dict[str, Any] | None = None,
     **kwargs,
 ) -> GAMAsyncKernel:
     """Create and initialize a GAM async kernel.

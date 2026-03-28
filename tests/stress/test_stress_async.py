@@ -54,7 +54,7 @@ class TestLargeVaultPerformance:
         assert create_time < 60, f"Creation took {create_time:.2f}s, expected <60s"
 
         logger.info(f"Created 1000 memories in {create_time:.2f}s")
-        logger.info(f"Average: {create_time/1000*1000:.2f}ms per memory")
+        logger.info(f"Average: {create_time / 1000 * 1000:.2f}ms per memory")
 
         # Ingest
         start_time = time.time()
@@ -94,7 +94,7 @@ class TestLargeVaultPerformance:
 
         assert len(results) > 0
         assert query_time < 2.0, f"Query took {query_time:.3f}s, expected <2.0s"
-        logger.info(f"Single query: {query_time*1000:.2f}ms")
+        logger.info(f"Single query: {query_time * 1000:.2f}ms")
 
         # Test multiple sequential queries
         queries = ["python", "docker", "kubernetes", "fastapi", "react"]
@@ -113,12 +113,12 @@ class TestLargeVaultPerformance:
         concurrent_time = time.time() - start_time
 
         assert len(results) == len(queries)
-        assert (
-            concurrent_time < sequential_time * 0.7
-        ), f"Concurrent ({concurrent_time:.2f}s) not faster than sequential ({sequential_time:.2f}s)"
+        assert concurrent_time < sequential_time * 0.7, (
+            f"Concurrent ({concurrent_time:.2f}s) not faster than sequential ({sequential_time:.2f}s)"
+        )
 
         logger.info(f"Concurrent queries (5): {concurrent_time:.2f}s")
-        logger.info(f"Speedup: {sequential_time/concurrent_time:.2f}x")
+        logger.info(f"Speedup: {sequential_time / concurrent_time:.2f}x")
 
 
 @pytest.mark.stress
@@ -153,7 +153,7 @@ class TestConcurrentOperations:
         assert duration < 20, f"Took {duration:.2f}s, expected <20s"
 
         logger.info(f"Created 100 memories concurrently in {duration:.2f}s")
-        logger.info(f"Average: {duration/100*1000:.2f}ms per memory")
+        logger.info(f"Average: {duration / 100 * 1000:.2f}ms per memory")
 
     @pytest.mark.asyncio
     async def test_concurrent_reads(self, tmp_path: Path):
@@ -192,7 +192,7 @@ class TestConcurrentOperations:
         assert duration < 10, f"Took {duration:.2f}s, expected <10s"
 
         logger.info(f"Executed 50 concurrent queries in {duration:.2f}s")
-        logger.info(f"Average: {duration/50*1000:.2f}ms per query")
+        logger.info(f"Average: {duration / 50 * 1000:.2f}ms per query")
 
     @pytest.mark.asyncio
     async def test_mixed_workload(self, tmp_path: Path):
@@ -294,6 +294,6 @@ class TestMemoryUsage:
         logger.info(f"Memory increase: {memory_increase:.2f}MB")
 
         # Should not use more than 300MB for 500 memories
-        assert (
-            memory_increase < 300
-        ), f"Memory increased by {memory_increase:.2f}MB, expected <300MB"
+        assert memory_increase < 300, (
+            f"Memory increased by {memory_increase:.2f}MB, expected <300MB"
+        )

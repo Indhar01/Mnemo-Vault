@@ -26,7 +26,7 @@ import threading
 from dataclasses import asdict, dataclass
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Literal, Optional
+from typing import Any, Literal
 
 logger = logging.getLogger("memograph.action_logger")
 
@@ -42,7 +42,7 @@ class Action:
     summary: str
     timestamp: str
     metadata: dict[str, Any] = None
-    user: Optional[str] = None
+    user: str | None = None
 
     def __post_init__(self):
         if self.metadata is None:
@@ -75,8 +75,8 @@ class ActionLogger:
         memory_id: str,
         action_type: ActionType,
         summary: str,
-        meta: Optional[dict[str, Any]] = None,
-        user: Optional[str] = None,
+        metadata: dict[str, Any] | None = None,
+        user: str | None = None,
     ) -> Action:
         """Log a memory action.
 
@@ -119,8 +119,8 @@ class ActionLogger:
     def get_recent_actions(
         self,
         limit: int = 100,
-        action_type: Optional[ActionType] = None,
-        memory_id: Optional[str] = None,
+        action_type: ActionType | None = None,
+        memory_id: str | None = None,
     ) -> list[dict[str, Any]]:
         """Get recent actions with optional filtering.
 
@@ -259,7 +259,7 @@ class ActionLogger:
 
         return grouped
 
-    def clear_history(self, before_date: Optional[datetime] = None):
+    def clear_history(self, before_date: datetime | None = None):
         """Clear action history.
 
         Args:
@@ -299,7 +299,7 @@ class ActionLogger:
 
 
 # Global logger instance
-_global_logger: Optional[ActionLogger] = None
+_global_logger: ActionLogger | None = None
 _logger_lock = threading.Lock()
 
 
@@ -327,8 +327,8 @@ def log_action(
     memory_id: str,
     action_type: ActionType,
     summary: str,
-    meta: Optional[dict[str, Any]] = None,
-    user: Optional[str] = None,
+    metadata: dict[str, Any] | None = None,
+    user: str | None = None,
 ) -> Action:
     """Convenience function to log an action.
 

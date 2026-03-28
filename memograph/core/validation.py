@@ -18,7 +18,7 @@ Example:
 import logging
 import re
 from pathlib import Path
-from typing import Any, Optional, Union
+from typing import Any, Union
 
 logger = logging.getLogger("memograph.validation")
 
@@ -34,8 +34,8 @@ class MemoGraphError(Exception):
     def __init__(
         self,
         message: str,
-        suggestion: Optional[str] = None,
-        context: Optional[dict[str, Any]] = None,
+        suggestion: str | None = None,
+        context: dict[str, Any] | None = None,
     ):
         """Initialize error with message, suggestion, and context.
 
@@ -167,8 +167,8 @@ def validate_path(
     must_exist: bool = False,
     must_be_file: bool = False,
     must_be_dir: bool = False,
-    allowed_extensions: Optional[list[str]] = None,
-    base_path: Optional[Path] = None,
+    allowed_extensions: list[str] | None = None,
+    base_path: Path | None = None,
 ) -> Path:
     """Validate and sanitize file/directory path.
 

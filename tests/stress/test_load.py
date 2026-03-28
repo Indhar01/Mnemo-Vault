@@ -57,8 +57,7 @@ class TestSustainedLoad:
                     elapsed = time.time() - start_time
                     rate = operation_count / elapsed
                     logger.info(
-                        f"Progress: {operation_count} ops, "
-                        f"{elapsed/60:.1f}min, {rate:.1f} ops/s"
+                        f"Progress: {operation_count} ops, {elapsed / 60:.1f}min, {rate:.1f} ops/s"
                     )
 
             except Exception as e:
@@ -68,8 +67,8 @@ class TestSustainedLoad:
         duration = time.time() - start_time
         success_rate = (operation_count - error_count) / operation_count * 100
 
-        logger.info(f"Completed: {operation_count} operations in {duration/60:.1f}min")
-        logger.info(f"Error rate: {error_count}/{operation_count} ({100-success_rate:.2f}%)")
+        logger.info(f"Completed: {operation_count} operations in {duration / 60:.1f}min")
+        logger.info(f"Error rate: {error_count}/{operation_count} ({100 - success_rate:.2f}%)")
 
         assert success_rate > 99.5, f"Success rate too low: {success_rate:.2f}%"
 
@@ -176,9 +175,9 @@ class TestSpikeLoad:
         logger.info(f"Recovery: 10 ops in {recovery_time:.3f}s")
 
         # Recovery should be similar to baseline
-        assert (
-            recovery_time < baseline_time * 2
-        ), f"System not recovering: {recovery_time:.3f}s vs {baseline_time:.3f}s baseline"
+        assert recovery_time < baseline_time * 2, (
+            f"System not recovering: {recovery_time:.3f}s vs {baseline_time:.3f}s baseline"
+        )
 
     @pytest.mark.asyncio
     async def test_query_spike(self, tmp_path: Path):
@@ -208,7 +207,7 @@ class TestSpikeLoad:
         await asyncio.gather(*[kernel.retrieve_nodes_async(q, top_k=5) for q in baseline_queries])
         baseline_time = time.time() - start
 
-        logger.info(f"Baseline: 5 queries in {baseline_time*1000:.2f}ms")
+        logger.info(f"Baseline: 5 queries in {baseline_time * 1000:.2f}ms")
 
         # Spike: 100 concurrent queries
         spike_queries = [f"topic {i % 20}" for i in range(100)]
@@ -224,7 +223,7 @@ class TestSpikeLoad:
         assert non_empty > 90, f"Only {non_empty}/100 queries returned results"
 
         logger.info(f"Spike: 100 queries in {spike_time:.2f}s")
-        logger.info(f"Average: {spike_time/100*1000:.2f}ms per query")
+        logger.info(f"Average: {spike_time / 100 * 1000:.2f}ms per query")
 
 
 @pytest.mark.stress

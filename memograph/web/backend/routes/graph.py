@@ -10,7 +10,6 @@ and actionable suggestions for resolution.
 """
 
 import logging
-from typing import Optional
 
 from fastapi import APIRouter, Query, Request
 
@@ -33,12 +32,10 @@ router = APIRouter()
 @router.get("/graph", response_model=GraphResponse)
 async def get_graph_data(
     request: Request,
-    limit: Optional[int] = Query(
-        None, ge=1, le=500, description="Maximum number of nodes to return"
-    ),
+    limit: int | None = Query(None, ge=1, le=500, description="Maximum number of nodes to return"),
     min_salience: float = Query(0.0, ge=0.0, le=1.0, description="Minimum salience score"),
-    tags: Optional[str] = Query(None, description="Comma-separated tags to filter by"),
-    focus_node: Optional[str] = Query(None, description="Center graph around this node ID"),
+    tags: str | None = Query(None, description="Comma-separated tags to filter by"),
+    focus_node: str | None = Query(None, description="Center graph around this node ID"),
 ):
     """
     Get graph data for visualization.

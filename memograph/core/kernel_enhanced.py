@@ -21,7 +21,6 @@ Example:
 import logging
 import time
 from pathlib import Path
-from typing import Optional
 
 from memograph.core.kernel import MemoryKernel
 from memograph.core.node import MemoryNode
@@ -78,7 +77,7 @@ class EnhancedMemoryKernel(MemoryKernel):
         self,
         vault_path: str,
         enable_cache: bool = True,
-        cache_dir: Optional[str] = None,
+        cache_dir: str | None = None,
         memory_cache_size: int = 1000,
         memory_cache_mb: int = 512,
         enable_disk_cache: bool = True,
@@ -111,8 +110,8 @@ class EnhancedMemoryKernel(MemoryKernel):
         self.validate_inputs = validate_inputs
 
         # Initialize caches
-        self.embedding_cache: Optional[MultiLevelCache] = None
-        self.query_cache: Optional[QueryResultCache] = None
+        self.embedding_cache: MultiLevelCache | None = None
+        self.query_cache: QueryResultCache | None = None
 
         if enable_cache:
             # Set cache directory
@@ -145,7 +144,7 @@ class EnhancedMemoryKernel(MemoryKernel):
         self,
         title: str,
         content: str,
-        tags: Optional[list[str]] = None,
+        tags: list[str] | None = None,
         salience: float = 0.5,
         **kwargs,
     ) -> str:
@@ -204,7 +203,7 @@ class EnhancedMemoryKernel(MemoryKernel):
     def retrieve_nodes(
         self,
         query: str,
-        tags: Optional[list[str]] = None,
+        tags: list[str] | None = None,
         depth: int = 2,
         top_k: int = 8,
         use_cache: bool = True,
@@ -271,7 +270,7 @@ class EnhancedMemoryKernel(MemoryKernel):
                 context={"query": query, "error": str(e)},
             )
 
-    def _get_embedding(self, text: str) -> Optional[list[float]]:
+    def _get_embedding(self, text: str) -> list[float] | None:
         """Get embedding with caching.
 
         Args:
@@ -365,7 +364,7 @@ class EnhancedMemoryKernel(MemoryKernel):
 
             logger.info(
                 f"Ingested {node_count} memories in {duration:.2f}s "
-                f"({node_count/duration:.1f} memories/sec)"
+                f"({node_count / duration:.1f} memories/sec)"
             )
 
         except Exception as e:

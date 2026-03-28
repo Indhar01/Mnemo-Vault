@@ -28,7 +28,7 @@ Example:
 import asyncio
 import logging
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 from memograph.core.kernel_async import AsyncMemoryKernel
 from memograph.core.node import MemoryNode
@@ -77,7 +77,7 @@ class BatchMemoryKernel(AsyncMemoryKernel):
     async def retrieve_batch_async(
         self,
         queries: list[str],
-        tags: Optional[list[str]] = None,
+        tags: list[str] | None = None,
         depth: int = 2,
         top_k: int = 8,
         deduplicate: bool = True,
@@ -168,7 +168,7 @@ class BatchMemoryKernel(AsyncMemoryKernel):
         return results
 
     async def _retrieve_with_query(
-        self, query: str, tags: Optional[list[str]], depth: int, top_k: int, **kwargs
+        self, query: str, tags: list[str] | None, depth: int, top_k: int, **kwargs
     ) -> tuple[str, list[MemoryNode]]:
         """Helper to retrieve with query tuple."""
         nodes = await self.retrieve_nodes_async(

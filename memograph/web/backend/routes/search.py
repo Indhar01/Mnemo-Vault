@@ -109,7 +109,7 @@ async def search_memories(search_req: SearchRequest, request: Request):
             raise search_timeout_error(search_req.query, SEARCH_TIMEOUT)
 
         logger.info(
-            f"Search completed: found {len(results)} results in {execution_time*1000:.2f}ms"
+            f"Search completed: found {len(results)} results in {execution_time * 1000:.2f}ms"
         )
 
         # Convert to response models

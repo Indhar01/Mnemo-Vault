@@ -31,7 +31,6 @@ import logging
 from collections import defaultdict
 from collections.abc import Iterator
 from dataclasses import dataclass
-from typing import Optional
 
 from memograph.core.enums import MemoryType
 from memograph.core.graph import VaultGraph
@@ -192,7 +191,7 @@ class EnhancedVaultGraph(VaultGraph):
         logger.debug(f"Removed node from graph: {node_id}")
         return True
 
-    def get(self, node_id: str) -> Optional[MemoryNode]:
+    def get(self, node_id: str) -> MemoryNode | None:
         """Get node by ID with O(1) lookup.
 
         Args:
