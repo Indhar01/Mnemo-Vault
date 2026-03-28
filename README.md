@@ -5,6 +5,9 @@
 [![License](https://img.shields.io/github/license/Indhar01/MemoGraph)](https://github.com/Indhar01/MemoGraph/blob/main/LICENSE)
 [![Code style: ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 [![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://github.com/pre-commit/pre-commit)
+[![Type checked: mypy](https://img.shields.io/badge/type%20checked-mypy-blue)](http://mypy-lang.org/)
+[![Tests](https://img.shields.io/badge/tests-pytest-orange)](https://docs.pytest.org/)
+[![Code Quality](https://img.shields.io/badge/code%20quality-A+-brightgreen)](https://github.com/Indhar01/MemoGraph)
 
 A graph-based memory system for LLMs with intelligent retrieval. MemoGraph provides a powerful solution to the LLM memory problem by combining knowledge graphs, hybrid retrieval, and semantic search.
 
@@ -88,19 +91,18 @@ print(context)
 
 MemoGraph includes a full-featured MCP server for seamless integration with AI assistants like **Cline** and **Claude Desktop**.
 
-### 10 Available Tools
+### 14 Available Tools
 
 | Category | Tools | Description |
 |----------|-------|-------------|
 | **Search** | `search_vault`, `query_with_context` | Semantic search and context retrieval |
 | **Create** | `create_memory`, `import_document` | Add memories and import documents |
-| **Read** | `list_memories`, `get_memory` | Browse and retrieve memories |
-| **Update** | `update_memory` ⭐ | Modify existing memories |
-| **Delete** | `delete_memory` ⭐ | Remove memories by ID |
+| **Read** | `list_memories`, `get_memory`, `get_vault_info` | Browse and retrieve memories |
+| **Update** | `update_memory` | Modify existing memories |
+| **Delete** | `delete_memory` | Remove memories by ID |
 | **Analytics** | `get_vault_stats` | Vault statistics and insights |
-| **Discovery** | `list_available_tools` ⭐ | List all available tools |
-
-⭐ = Recently added
+| **Discovery** | `list_available_tools` | List all available tools |
+| **Autonomous** | `auto_hook_query`, `auto_hook_response`, `configure_autonomous_mode`, `get_autonomous_config` | Autonomous memory management |
 
 ### Quick Setup for Cline
 
@@ -272,9 +274,11 @@ MemoGraph/
 │   │   ├── frameworks/ # Framework integrations
 │   │   └── llm/        # LLM providers
 │   ├── storage/        # Storage and caching
+│   ├── mcp/            # MCP server implementation
 │   └── cli.py          # CLI implementation
 ├── tests/              # Test suite
-└── examples/           # Example usage
+├── examples/           # Example usage
+└── scripts/            # Utility scripts
 ```
 
 ## 🤝 Contributing
@@ -304,9 +308,19 @@ We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) f
    pytest
    ```
 
+### Code Quality
+
+We maintain high code quality standards:
+
+- **Linting**: Ruff for fast Python linting
+- **Formatting**: Ruff formatter for consistent code style
+- **Type Checking**: MyPy for static type analysis
+- **Testing**: Pytest with comprehensive test coverage
+- **Pre-commit Hooks**: Automated checks before each commit
+
 ## 📚 Documentation
 
-- **[Smart Auto-Organization Engine](docs/SMART_AUTO_ORGANIZATION.md)** - Automatic entity extraction guide
+- **[AGENTS.md](AGENTS.md)** - Guide for AI agents working with this codebase
 - **[Contributing Guide](CONTRIBUTING.md)** - How to contribute to the project
 - **[Code of Conduct](CODE_OF_CONDUCT.md)** - Community guidelines
 - **[Security Policy](SECURITY.md)** - Security reporting and best practices
@@ -335,7 +349,23 @@ Inspired by the need for better memory management in LLM applications. Built wit
 
 ## 🚦 Status
 
-This project is in active development. While the core functionality is stable, the API may change in minor versions until we reach v1.0.0.
+**Current Version**: 0.0.2 (Alpha)
+
+This project is in active development with a focus on code quality and stability:
+
+- ✅ Core functionality is stable and tested
+- ✅ All linter checks passing (Ruff)
+- ✅ Type checking configured (MyPy)
+- ✅ Pre-commit hooks enabled
+- ✅ Comprehensive test suite
+- ⚠️ API may change in minor versions until v1.0.0
+
+**Recent Improvements**:
+- Enhanced code quality with Ruff linting and formatting
+- Added comprehensive type checking with MyPy
+- Improved project structure and organization
+- Updated MCP server with 14 tools including autonomous features
+- Added AGENTS.md for AI assistant integration
 
 ---
 
