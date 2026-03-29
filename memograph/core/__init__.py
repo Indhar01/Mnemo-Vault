@@ -14,7 +14,14 @@ from .entity import (
     TimelineEntity,
     TopicEntity,
 )
-from .enums import EntityType, MemoryType, ParticipantRole, PriorityLevel, SentimentType, StatusType
+from .enums import (
+    EntityType,
+    MemoryType,
+    ParticipantRole,
+    PriorityLevel,
+    SentimentType,
+    StatusType,
+)
 from .extractor import SmartAutoOrganizer
 from .graph import VaultGraph
 from .kernel import MemoryKernel

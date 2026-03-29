@@ -69,7 +69,9 @@ class ChatGPTImporter:
             create_time = data.get("create_time", data.get("created_at"))
             update_time = data.get("update_time", data.get("updated_at"))
 
-            created_at = datetime.fromtimestamp(create_time) if create_time else datetime.now()
+            created_at = (
+                datetime.fromtimestamp(create_time) if create_time else datetime.now()
+            )
             updated_at = datetime.fromtimestamp(update_time) if update_time else None
 
             # Parse messages

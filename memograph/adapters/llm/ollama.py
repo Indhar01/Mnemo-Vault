@@ -6,19 +6,27 @@ from urllib import error, request
 
 @dataclass
 class OllamaLLMConfig:
-    model: str = field(default_factory=lambda: os.environ.get("OLLAMA_MODEL", "llama3.1:8b"))
+    model: str = field(
+        default_factory=lambda: os.environ.get("OLLAMA_MODEL", "llama3.1:8b")
+    )
     max_tokens: int = 512
     temperature: float = 0.1
-    timeout: int = field(default_factory=lambda: int(os.environ.get("OLLAMA_TIMEOUT", "600")))
+    timeout: int = field(
+        default_factory=lambda: int(os.environ.get("OLLAMA_TIMEOUT", "600"))
+    )
     stream: bool = True
 
 
 class OllamaLLMClient:
     def __init__(self, base_url: str | None = None):
-        effective_base = base_url or os.environ.get("OLLAMA_BASE_URL", "http://localhost:11434")
+        effective_base = base_url or os.environ.get(
+            "OLLAMA_BASE_URL", "http://localhost:11434"
+        )
         self.url = f"{effective_base.rstrip('/')}/api/generate"
 
-    def generate(self, prompt: str, config: OllamaLLMConfig, stream_callback=None) -> str:
+    def generate(
+        self, prompt: str, config: OllamaLLMConfig, stream_callback=None
+    ) -> str:
         """
         Generate a response from Ollama.
 
@@ -76,7 +84,9 @@ class OllamaLLMClient:
         response_text: str = body.get("response", "")
         return response_text.strip()
 
-    def _generate_stream(self, req: request.Request, timeout: int, stream_callback) -> str:
+    def _generate_stream(
+        self, req: request.Request, timeout: int, stream_callback
+    ) -> str:
         """Generate response with streaming token display."""
         full_response = []
 

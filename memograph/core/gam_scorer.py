@@ -345,7 +345,8 @@ class GAMScorer:
                 "relationship": {
                     "score": relationship_score,
                     "weight": self.config.relationship_weight,
-                    "contribution": self.config.relationship_weight * relationship_score,
+                    "contribution": self.config.relationship_weight
+                    * relationship_score,
                 },
                 "co_access": {
                     "score": co_access_score,

@@ -131,9 +131,15 @@ def main():
     # Get entities by type
     topics = kernel.get_entities(memory_id=memory.id, entity_type=EntityType.TOPIC)
     people = kernel.get_entities(memory_id=memory.id, entity_type=EntityType.PERSON)
-    actions = kernel.get_entities(memory_id=memory.id, entity_type=EntityType.ACTION_ITEM)
-    decisions = kernel.get_entities(memory_id=memory.id, entity_type=EntityType.DECISION)
-    questions = kernel.get_entities(memory_id=memory.id, entity_type=EntityType.QUESTION)
+    actions = kernel.get_entities(
+        memory_id=memory.id, entity_type=EntityType.ACTION_ITEM
+    )
+    decisions = kernel.get_entities(
+        memory_id=memory.id, entity_type=EntityType.DECISION
+    )
+    questions = kernel.get_entities(
+        memory_id=memory.id, entity_type=EntityType.QUESTION
+    )
     risks = kernel.get_entities(memory_id=memory.id, entity_type=EntityType.RISK)
     ideas = kernel.get_entities(memory_id=memory.id, entity_type=EntityType.IDEA)
     refs = kernel.get_entities(memory_id=memory.id, entity_type=EntityType.REFERENCE)

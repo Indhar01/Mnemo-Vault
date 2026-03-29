@@ -39,5 +39,7 @@ class SentenceTransformerEmbeddings(EmbeddingAdapter):
 
     def embed_batch(self, texts: list[str]) -> list[list[float]]:
         """Generate embeddings for multiple texts efficiently."""
-        embeddings = self.model.encode(texts, convert_to_numpy=True, show_progress_bar=False)
+        embeddings = self.model.encode(
+            texts, convert_to_numpy=True, show_progress_bar=False
+        )
         return list(embeddings.tolist())

@@ -47,12 +47,24 @@ class EnhancedMCPTools:
                 "total_tools": len(tools_info),
                 "tools": tools_info,
                 "categories": {
-                    "search": ["search_vault", "query_with_context", "find_similar_memories"],
-                    "create": ["create_memory", "batch_create_memories", "import_document"],
+                    "search": [
+                        "search_vault",
+                        "query_with_context",
+                        "find_similar_memories",
+                    ],
+                    "create": [
+                        "create_memory",
+                        "batch_create_memories",
+                        "import_document",
+                    ],
                     "read": ["get_memory", "list_memories", "get_memory_connections"],
                     "update": ["update_memory"],
                     "delete": ["delete_memory", "bulk_delete_memories"],
-                    "analytics": ["get_vault_stats", "get_vault_analytics", "get_tag_statistics"],
+                    "analytics": [
+                        "get_vault_stats",
+                        "get_vault_analytics",
+                        "get_tag_statistics",
+                    ],
                     "maintenance": [
                         "reindex_vault",
                         "validate_vault",
@@ -81,7 +93,9 @@ class EnhancedMCPTools:
             # Find the memory file
             memory_path = None
             for md_file in self.vault_path.rglob("*.md"):
-                if md_file.stem == memory_id or md_file.stem.startswith(f"{memory_id}-"):
+                if md_file.stem == memory_id or md_file.stem.startswith(
+                    f"{memory_id}-"
+                ):
                     memory_path = md_file
                     break
 
@@ -152,7 +166,9 @@ class EnhancedMCPTools:
             # Find the memory file
             memory_path = None
             for md_file in self.vault_path.rglob("*.md"):
-                if md_file.stem == memory_id or md_file.stem.startswith(f"{memory_id}-"):
+                if md_file.stem == memory_id or md_file.stem.startswith(
+                    f"{memory_id}-"
+                ):
                     memory_path = md_file
                     break
 
@@ -188,7 +204,10 @@ class EnhancedMCPTools:
                 frontmatter["title"] = title
             if salience is not None:
                 if not 0.0 <= salience <= 1.0:
-                    return {"success": False, "error": "Salience must be between 0.0 and 1.0"}
+                    return {
+                        "success": False,
+                        "error": "Salience must be between 0.0 and 1.0",
+                    }
                 frontmatter["salience"] = salience
             frontmatter["modified"] = datetime.now(timezone.utc).isoformat()
 
@@ -207,7 +226,9 @@ class EnhancedMCPTools:
 
             # Write back
             new_frontmatter = (
-                "---\n" + yaml.safe_dump(frontmatter, sort_keys=False).strip() + "\n---\n\n"
+                "---\n"
+                + yaml.safe_dump(frontmatter, sort_keys=False).strip()
+                + "\n---\n\n"
             )
             memory_path.write_text(new_frontmatter + body + "\n", encoding="utf-8")
 
@@ -310,7 +331,10 @@ class EnhancedMCPTools:
                         deleted.append(node.id)
                     else:
                         errors.append(
-                            {"memory_id": node.id, "error": result.get("error", "Unknown error")}
+                            {
+                                "memory_id": node.id,
+                                "error": result.get("error", "Unknown error"),
+                            }
                         )
                 except Exception as e:
                     errors.append({"memory_id": node.id, "error": str(e)})
@@ -373,7 +397,9 @@ class EnhancedMCPTools:
 
             # Most important memories (by salience)
             most_important = sorted(
-                [(n.id, n.title, n.salience) for n in nodes], key=lambda x: x[2], reverse=True
+                [(n.id, n.title, n.salience) for n in nodes],
+                key=lambda x: x[2],
+                reverse=True,
             )[:10]
 
             # Recent activity
@@ -392,12 +418,16 @@ class EnhancedMCPTools:
                 "total_memories": total,
                 "average_salience": round(avg_salience, 3),
                 "type_distribution": type_counts,
-                "top_tags": sorted(tag_counts.items(), key=lambda x: x[1], reverse=True)[:20],
+                "top_tags": sorted(
+                    tag_counts.items(), key=lambda x: x[1], reverse=True
+                )[:20],
                 "most_connected": [
-                    {"id": m[0], "title": m[1], "connections": m[2]} for m in most_connected
+                    {"id": m[0], "title": m[1], "connections": m[2]}
+                    for m in most_connected
                 ],
                 "most_important": [
-                    {"id": m[0], "title": m[1], "salience": m[2]} for m in most_important
+                    {"id": m[0], "title": m[1], "salience": m[2]}
+                    for m in most_important
                 ],
                 "recent_memories": [
                     {"id": m[0], "title": m[1], "created_at": m[2]} for m in recent
@@ -483,6 +513,9 @@ class EnhancedMCPTools:
         Returns:
             List of best matching candidates
         """
-        scores = [(c, SequenceMatcher(None, target.lower(), c.lower()).ratio()) for c in candidates]
+        scores = [
+            (c, SequenceMatcher(None, target.lower(), c.lower()).ratio())
+            for c in candidates
+        ]
         scores.sort(key=lambda x: x[1], reverse=True)
         return [c for c, score in scores[:n] if score > 0.5]

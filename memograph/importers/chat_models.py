@@ -185,12 +185,19 @@ class KnowledgeGem:
     @classmethod
     def create_fact(cls, content: str, source_id: str, **kwargs) -> "KnowledgeGem":
         """Create a fact gem."""
-        return cls(gem_type="fact", content=content, source_conversation_id=source_id, **kwargs)
+        return cls(
+            gem_type="fact", content=content, source_conversation_id=source_id, **kwargs
+        )
 
     @classmethod
     def create_decision(cls, content: str, source_id: str, **kwargs) -> "KnowledgeGem":
         """Create a decision gem."""
-        return cls(gem_type="decision", content=content, source_conversation_id=source_id, **kwargs)
+        return cls(
+            gem_type="decision",
+            content=content,
+            source_conversation_id=source_id,
+            **kwargs,
+        )
 
     @classmethod
     def create_code(
@@ -208,7 +215,12 @@ class KnowledgeGem:
     @classmethod
     def create_insight(cls, content: str, source_id: str, **kwargs) -> "KnowledgeGem":
         """Create an insight gem."""
-        return cls(gem_type="insight", content=content, source_conversation_id=source_id, **kwargs)
+        return cls(
+            gem_type="insight",
+            content=content,
+            source_conversation_id=source_id,
+            **kwargs,
+        )
 
 
 @dataclass
@@ -268,7 +280,9 @@ class ImportStats:
 
         if self.gems_by_type:
             lines.append("\nGems by Type:")
-            for gtype, count in sorted(self.gems_by_type.items(), key=lambda x: x[1], reverse=True):
+            for gtype, count in sorted(
+                self.gems_by_type.items(), key=lambda x: x[1], reverse=True
+            ):
                 lines.append(f"  - {gtype}: {count}")
 
         return "\n".join(lines)

@@ -19,7 +19,9 @@ class Spinner:
 
     def __init__(self, message: str = "Thinking"):
         self.message = message
-        self.spinner_chars = itertools.cycle(["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"])
+        self.spinner_chars = itertools.cycle(
+            ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"]
+        )
         self.stop_spinner = False
         self.spinner_thread: threading.Thread | None = None
 
@@ -116,7 +118,9 @@ def _run_ask(kernel: MemoryKernel, args) -> None:
 
         try:
             # Determine if we should stream (only for Ollama)
-            should_stream = args.provider == "ollama" and args.stream and not args.no_spinner
+            should_stream = (
+                args.provider == "ollama" and args.stream and not args.no_spinner
+            )
 
             if should_stream:
                 # Streaming mode: show spinner for connection, then stream tokens
@@ -286,7 +290,9 @@ def _save_conversation_separate(
     try:
         # Generate title if auto_title enabled
         if auto_title:
-            title = _generate_conversation_title(query, answer, provider, model, base_url)
+            title = _generate_conversation_title(
+                query, answer, provider, model, base_url
+            )
         else:
             title = query[:50] + ("..." if len(query) > 50 else "")
 
@@ -338,7 +344,9 @@ def _save_conversation_combined(
         first_a = conversation_history[0]["answer"]
 
         if auto_title:
-            title = _generate_conversation_title(first_q, first_a, provider, model, base_url)
+            title = _generate_conversation_title(
+                first_q, first_a, provider, model, base_url
+            )
         else:
             title = first_q[:50] + ("..." if len(first_q) > 50 else "")
 
@@ -373,7 +381,9 @@ def _save_conversation_combined(
             },
         )
 
-        print(f"\n✓ Saved conversation with {len(conversation_history)} exchanges to vault")
+        print(
+            f"\n✓ Saved conversation with {len(conversation_history)} exchanges to vault"
+        )
 
     except Exception as e:
         print(f"\nWarning: Failed to save combined conversation: {e}")
@@ -384,7 +394,9 @@ def _run_doctor(args) -> None:
     vault = MemoryKernel(args.vault)
     stats = vault.ingest(force=False)
     print(f"vault: {vault.vault_path}")
-    print(f"indexed: {stats['indexed']} | skipped: {stats['skipped']} | total: {stats['total']}")
+    print(
+        f"indexed: {stats['indexed']} | skipped: {stats['skipped']} | total: {stats['total']}"
+    )
 
     anth_key = os.environ.get("ANTHROPIC_API_KEY")
     print(f"claude_api_key: {'present' if anth_key else 'missing'}")
@@ -428,33 +440,60 @@ def main():
         help="Tags (with or without # prefix)",
     )
 
-    context_parser = subparsers.add_parser("context", help="Build context window for a query")
+    context_parser = subparsers.add_parser(
+        "context", help="Build context window for a query"
+    )
     context_parser.add_argument("--query", required=True, help="Query text")
-    context_parser.add_argument("--tags", nargs="*", default=[], help="Optional tag filter")
-    context_parser.add_argument("--depth", type=int, default=2, help="Graph traversal depth")
-    context_parser.add_argument("--top-k", type=int, default=8, help="Max memories to return")
+    context_parser.add_argument(
+        "--tags", nargs="*", default=[], help="Optional tag filter"
+    )
+    context_parser.add_argument(
+        "--depth", type=int, default=2, help="Graph traversal depth"
+    )
+    context_parser.add_argument(
+        "--top-k", type=int, default=8, help="Max memories to return"
+    )
     context_parser.add_argument(
         "--token-limit", type=int, default=2048, help="Compression token limit"
     )
 
-    ask_parser = subparsers.add_parser("ask", help="Ask an LLM with retrieved memory context")
+    ask_parser = subparsers.add_parser(
+        "ask", help="Ask an LLM with retrieved memory context"
+    )
     ask_parser.add_argument(
-        "--provider", choices=["claude", "ollama"], default="ollama", help="LLM provider"
+        "--provider",
+        choices=["claude", "ollama"],
+        default="ollama",
+        help="LLM provider",
     )
     ask_parser.add_argument("--query", help="Question text (omit in --chat mode)")
     ask_parser.add_argument("--chat", action="store_true", help="Interactive chat mode")
     ask_parser.add_argument("--tags", nargs="*", default=[], help="Optional tag filter")
-    ask_parser.add_argument("--depth", type=int, default=2, help="Graph traversal depth")
-    ask_parser.add_argument("--top-k", type=int, default=8, help="Max memories to retrieve")
+    ask_parser.add_argument(
+        "--depth", type=int, default=2, help="Graph traversal depth"
+    )
+    ask_parser.add_argument(
+        "--top-k", type=int, default=8, help="Max memories to retrieve"
+    )
     ask_parser.add_argument(
         "--token-limit", type=int, default=2048, help="Context compression budget"
     )
     ask_parser.add_argument("--model", default=None, help="Provider-specific model")
-    ask_parser.add_argument("--base-url", default=None, help="Provider base URL override")
-    ask_parser.add_argument("--max-tokens", type=int, default=1024, help="Max generated tokens")
-    ask_parser.add_argument("--temperature", type=float, default=0.1, help="Sampling temperature")
-    ask_parser.add_argument("--show-context", action="store_true", help="Print context sent to LLM")
-    ask_parser.add_argument("--no-citations", action="store_true", help="Hide source list output")
+    ask_parser.add_argument(
+        "--base-url", default=None, help="Provider base URL override"
+    )
+    ask_parser.add_argument(
+        "--max-tokens", type=int, default=1024, help="Max generated tokens"
+    )
+    ask_parser.add_argument(
+        "--temperature", type=float, default=0.1, help="Sampling temperature"
+    )
+    ask_parser.add_argument(
+        "--show-context", action="store_true", help="Print context sent to LLM"
+    )
+    ask_parser.add_argument(
+        "--no-citations", action="store_true", help="Hide source list output"
+    )
     ask_parser.add_argument(
         "--save-chat",
         action="store_true",
@@ -486,7 +525,9 @@ def main():
         help="Disable automatic title generation",
     )
     ask_parser.add_argument(
-        "--no-spinner", action="store_true", help="Disable spinner animation during LLM requests"
+        "--no-spinner",
+        action="store_true",
+        help="Disable spinner animation during LLM requests",
     )
     ask_parser.add_argument(
         "--ollama-timeout",
@@ -553,9 +594,13 @@ def main():
     doctor_parser = subparsers.add_parser(
         "doctor", help="Run environment and integration diagnostics"
     )
-    doctor_parser.add_argument("--ollama-url", default=None, help="Override Ollama base URL")
+    doctor_parser.add_argument(
+        "--ollama-url", default=None, help="Override Ollama base URL"
+    )
 
-    setup_mcp_parser = subparsers.add_parser("setup-mcp", help="Interactive MCP setup wizard")
+    setup_mcp_parser = subparsers.add_parser(
+        "setup-mcp", help="Interactive MCP setup wizard"
+    )
     setup_mcp_parser.add_argument(
         "--vault-path", default=None, help="Default vault path for setup (optional)"
     )
@@ -613,7 +658,8 @@ def main():
                 supported = [
                     f
                     for f in files
-                    if f.is_file() and f.suffix.lower() in [".txt", ".pdf", ".docx", ".doc"]
+                    if f.is_file()
+                    and f.suffix.lower() in [".txt", ".pdf", ".docx", ".doc"]
                 ]
 
                 print(f"\nFound {len(supported)} files to import:")
@@ -670,7 +716,9 @@ def main():
             return
 
         # Auto-ingest if requested
-        if args.auto_ingest and (results["success"] if source_path.is_dir() else success):
+        if args.auto_ingest and (
+            results["success"] if source_path.is_dir() else success
+        ):
             print(f"\n{'=' * 50}")
             print("Running ingest...")
             stats = kernel.ingest()

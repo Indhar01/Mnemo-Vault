@@ -101,7 +101,9 @@ class GAMKernelTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             kernel = MemoryKernel(tmp, use_gam=True)
 
-            kernel.remember(title="Memory 1", content="Content 1", memory_type=MemoryType.FACT)
+            kernel.remember(
+                title="Memory 1", content="Content 1", memory_type=MemoryType.FACT
+            )
 
             kernel.ingest()
 

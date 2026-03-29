@@ -52,7 +52,9 @@ class AccessTracker:
         self.persist_path = persist_path
 
         # Co-access matrix: node_id -> node_id -> count
-        self.co_access_matrix: dict[str, dict[str, int]] = defaultdict(lambda: defaultdict(int))
+        self.co_access_matrix: dict[str, dict[str, int]] = defaultdict(
+            lambda: defaultdict(int)
+        )
 
         # Query history: recent queries with accessed nodes
         self.access_history: deque = deque(maxlen=max_history)
@@ -194,7 +196,9 @@ class AccessTracker:
         """
         try:
             state = {
-                "co_access_matrix": {k: dict(v) for k, v in self.co_access_matrix.items()},
+                "co_access_matrix": {
+                    k: dict(v) for k, v in self.co_access_matrix.items()
+                },
                 "access_history": list(self.access_history),
                 "node_access_counts": dict(self.node_access_counts),
                 "total_queries": self.total_queries,
@@ -232,7 +236,9 @@ class AccessTracker:
             self.access_history = deque(history, maxlen=self.max_history)
 
             # Restore access counts
-            self.node_access_counts = defaultdict(int, state.get("node_access_counts", {}))
+            self.node_access_counts = defaultdict(
+                int, state.get("node_access_counts", {})
+            )
 
             # Restore query count
             self.total_queries = state.get("total_queries", 0)
@@ -254,7 +260,9 @@ class AccessTracker:
 
         most_accessed = []
         if self.node_access_counts:
-            sorted_nodes = sorted(self.node_access_counts.items(), key=lambda x: x[1], reverse=True)
+            sorted_nodes = sorted(
+                self.node_access_counts.items(), key=lambda x: x[1], reverse=True
+            )
             most_accessed = sorted_nodes[:10]
 
         return {

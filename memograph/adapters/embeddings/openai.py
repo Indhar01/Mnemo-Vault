@@ -2,11 +2,15 @@ from .base import EmbeddingAdapter
 
 
 class OpenAIEmbeddingAdapter(EmbeddingAdapter):
-    def __init__(self, model: str = "text-embedding-3-small", api_key: str | None = None):
+    def __init__(
+        self, model: str = "text-embedding-3-small", api_key: str | None = None
+    ):
         try:
             from openai import OpenAI
         except ImportError as exc:
-            raise ImportError("Install the optional dependency with: pip install openai") from exc
+            raise ImportError(
+                "Install the optional dependency with: pip install openai"
+            ) from exc
 
         self.client = OpenAI(api_key=api_key)
         self.model = model

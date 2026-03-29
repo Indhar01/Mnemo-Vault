@@ -4,7 +4,9 @@ from dataclasses import dataclass, field
 
 @dataclass
 class ClaudeLLMConfig:
-    model: str = field(default_factory=lambda: os.environ.get("MODEL_NAME", "claude-sonnet-4-5"))
+    model: str = field(
+        default_factory=lambda: os.environ.get("MODEL_NAME", "claude-sonnet-4-5")
+    )
     max_tokens: int = 1024
     temperature: float = 0.1
 

@@ -58,7 +58,10 @@ class DocumentImporter:
 
         # Check if file already exists
         if output_file.exists() and not overwrite:
-            return False, f"File already exists: {output_file.name} (use --overwrite to replace)"
+            return (
+                False,
+                f"File already exists: {output_file.name} (use --overwrite to replace)",
+            )
 
         # Convert based on format
         try:
@@ -75,7 +78,9 @@ class DocumentImporter:
                 return False, "Failed to extract content from file"
 
             # Generate frontmatter
-            frontmatter = self._generate_frontmatter(source_file, memory_type, salience, tags)
+            frontmatter = self._generate_frontmatter(
+                source_file, memory_type, salience, tags
+            )
 
             # Write markdown file
             markdown_content = f"{frontmatter}\n{content}\n"
@@ -120,7 +125,11 @@ class DocumentImporter:
             }
 
         # Find all supported files
-        files = list(source_folder.rglob("*")) if recursive else list(source_folder.glob("*"))
+        files = (
+            list(source_folder.rglob("*"))
+            if recursive
+            else list(source_folder.glob("*"))
+        )
 
         # Filter to supported formats
         supported_files = [
@@ -138,10 +147,17 @@ class DocumentImporter:
             }
 
         # Process each file
-        results: dict[str, Any] = {"success": 0, "failed": 0, "skipped": 0, "errors": []}
+        results: dict[str, Any] = {
+            "success": 0,
+            "failed": 0,
+            "skipped": 0,
+            "errors": [],
+        }
 
         for file in supported_files:
-            success, message = self.import_file(str(file), memory_type, salience, tags, overwrite)
+            success, message = self.import_file(
+                str(file), memory_type, salience, tags, overwrite
+            )
 
             if success:
                 results["success"] += 1

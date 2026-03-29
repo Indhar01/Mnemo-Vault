@@ -1,7 +1,9 @@
 """Example demonstrating embedding support for semantic search."""
 
 from memograph import MemoryKernel, MemoryType
-from memograph.adapters.embeddings.sentence_transformers import SentenceTransformerEmbeddings
+from memograph.adapters.embeddings.sentence_transformers import (
+    SentenceTransformerEmbeddings,
+)
 
 # Choose your embedding provider:
 

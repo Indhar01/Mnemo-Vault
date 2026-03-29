@@ -127,7 +127,9 @@ class GAMRetriever(HybridRetriever):
         """
         if not self.use_gam:
             # Backward compatible: use parent implementation
-            return super().retrieve(query, seed_ids, tags, memory_type, depth, top_k, min_salience)
+            return super().retrieve(
+                query, seed_ids, tags, memory_type, depth, top_k, min_salience
+            )
 
         # GAM-enhanced retrieval (seed_ids should not be None for GAM)
         if seed_ids is None:
@@ -156,7 +158,11 @@ class GAMRetriever(HybridRetriever):
         initial_top_k = max(top_k * 2, 20)
 
         # Get initial candidates using standard retrieval
-        candidates = super().retrieve(query, seed_ids, tags, None, depth, initial_top_k, 0.0)
+        # Pass None for seed_ids to trigger filter path when no seeds provided
+        effective_seed_ids = seed_ids if seed_ids else None
+        candidates = super().retrieve(
+            query, effective_seed_ids, tags, None, depth, initial_top_k, 0.0
+        )
 
         if not candidates:
             logger.debug("No candidates found for query: %s", query)
@@ -169,7 +175,9 @@ class GAMRetriever(HybridRetriever):
 
         # Score all candidates with GAM
         if not self.scorer:
-            raise RuntimeError("GAM scorer not initialized. This should not happen in GAM mode.")
+            raise RuntimeError(
+                "GAM scorer not initialized. This should not happen in GAM mode."
+            )
 
         scored_nodes = []
         for node in candidates:
@@ -223,13 +231,17 @@ class GAMRetriever(HybridRetriever):
 
         # Get candidates
         initial_top_k = max(top_k * 2, 20)
-        candidates = super().retrieve(query, seed_ids, tags, None, depth, initial_top_k, 0.0)
+        candidates = super().retrieve(
+            query, seed_ids, tags, None, depth, initial_top_k, 0.0
+        )
 
         query_context = {"query": query, "seed_ids": seed_ids}
 
         # Get detailed explanations for top candidates
         if not self.scorer:
-            raise RuntimeError("GAM scorer not initialized. This should not happen in GAM mode.")
+            raise RuntimeError(
+                "GAM scorer not initialized. This should not happen in GAM mode."
+            )
 
         explanations = []
         for node in candidates[:top_k]:

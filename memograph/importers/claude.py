@@ -66,10 +66,14 @@ class ClaudeImporter:
             created_at_str = data.get("created_at", data.get("createdAt"))
             updated_at_str = data.get("updated_at", data.get("updatedAt"))
 
-            created_at = self._parse_timestamp(created_at_str) if created_at_str else None
+            created_at = (
+                self._parse_timestamp(created_at_str) if created_at_str else None
+            )
             if created_at is None:
                 created_at = datetime.now()
-            updated_at = self._parse_timestamp(updated_at_str) if updated_at_str else None
+            updated_at = (
+                self._parse_timestamp(updated_at_str) if updated_at_str else None
+            )
 
             # Parse messages
             chat_messages = data.get("chat_messages", [])
@@ -130,8 +134,12 @@ class ClaudeImporter:
                 return None
 
             # Get timestamp
-            created_at_str = message_data.get("created_at", message_data.get("createdAt"))
-            timestamp = self._parse_timestamp(created_at_str) if created_at_str else None
+            created_at_str = message_data.get(
+                "created_at", message_data.get("createdAt")
+            )
+            timestamp = (
+                self._parse_timestamp(created_at_str) if created_at_str else None
+            )
 
             # Get metadata
             metadata = {

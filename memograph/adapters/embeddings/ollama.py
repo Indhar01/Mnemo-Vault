@@ -5,7 +5,9 @@ from .base import EmbeddingAdapter
 
 
 class OllamaEmbeddingAdapter(EmbeddingAdapter):
-    def __init__(self, model: str = "nomic-embed-text", base_url: str = "http://localhost:11434"):
+    def __init__(
+        self, model: str = "nomic-embed-text", base_url: str = "http://localhost:11434"
+    ):
         self.model = model
         self.url = f"{base_url.rstrip('/')}/api/embeddings"
 
