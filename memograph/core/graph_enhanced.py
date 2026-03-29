@@ -29,7 +29,6 @@ Example:
 
 import logging
 from collections import defaultdict
-from collections.abc import Iterator
 from dataclasses import dataclass
 
 from memograph.core.enums import MemoryType
