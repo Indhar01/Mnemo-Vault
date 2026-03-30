@@ -258,14 +258,15 @@ def invalid_memory_type_error(memory_type: str) -> MemoGraphError:
     # Import here to avoid circular dependency
     from ...core.enums import MemoryType
 
-    valid_types = [t.value for t in MemoryType]
+    valid_types: list[str] = [t.value for t in MemoryType]
+    valid_types_str = ", ".join(valid_types)
 
     return MemoGraphError(
         code=ErrorCode.INVALID_MEMORY_TYPE,
         message=f"Invalid memory type: '{memory_type}'",
-        details=f"Memory type must be one of: {', '.join(valid_types)}",
+        details=f"Memory type must be one of: {valid_types_str}",
         suggestions=[
-            f"Use one of the valid memory types: {', '.join(valid_types)}",
+            f"Use one of the valid memory types: {valid_types_str}",
             "Check the MemoryType documentation",
             "Memory type is case-sensitive",
         ],

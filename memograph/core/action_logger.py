@@ -84,7 +84,7 @@ class ActionLogger:
             memory_id: ID of the memory
             action_type: Type of action performed
             summary: Human-readable summary
-            meta Additional metadata
+            metadata: Additional metadata
             user: User who performed action (optional)
 
         Returns:
