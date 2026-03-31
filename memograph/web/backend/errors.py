@@ -20,6 +20,7 @@ Error Response Format:
 
 import logging
 from datetime import datetime
+from typing import Any
 
 from fastapi import Request
 from fastapi.responses import JSONResponse
@@ -132,7 +133,7 @@ class MemoGraphError(Exception):
         self.extra = extra
         self.timestamp = datetime.utcnow().isoformat() + "Z"
 
-    def to_dict(self) -> dict:
+    def to_dict(self) -> dict[str, Any]:
         """
         Convert error to a dictionary for JSON response.
 

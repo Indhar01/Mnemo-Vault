@@ -262,8 +262,8 @@ class TestActionLogger:
         logger = ActionLogger(str(tmp_path / "vault"))
         logger.log_action("m1", "create", "Old")
 
-        # Small delay to ensure different timestamps
-        time.sleep(0.01)
+        # Small delay to ensure different timestamps (increased for CI reliability)
+        time.sleep(0.1)
         cutoff = datetime.now()
 
         logger.log_action("m2", "create", "New")

@@ -41,7 +41,7 @@ class Action:
     action_type: ActionType
     summary: str
     timestamp: str
-    metadata: dict[str, Any] = None
+    metadata: dict[str, Any] | None = None
     user: str | None = None
 
     def __post_init__(self):
