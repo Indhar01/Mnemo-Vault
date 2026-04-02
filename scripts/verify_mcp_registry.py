@@ -86,8 +86,8 @@ def check_server_json() -> bool:
         return False
     print_status(f"Description length OK: {len(description)}/100 chars", True)
 
-    # Verify namespace format
-    expected_namespace = "io.github.indhar01/memograph"
+    # Verify namespace format (case-sensitive!)
+    expected_namespace = "io.github.Indhar01/memograph"
     actual_namespace = data.get("name", "")
 
     if actual_namespace != expected_namespace:
@@ -294,7 +294,7 @@ def main() -> int:
         print("2. Visit: https://modelcontextprotocol.io/registry")
         print("3. Click 'Publish a Server' or 'Submit Server'")
         print("4. Authenticate with GitHub (Indhar01)")
-        print("5. Submit namespace: io.github.indhar01/memograph")
+        print("5. Submit namespace: io.github.Indhar01/memograph")
         print("\nSee docs/MCP_REGISTRY_GUIDE.md for detailed instructions.")
         return 0
     else:
