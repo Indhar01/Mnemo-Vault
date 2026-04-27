@@ -135,6 +135,8 @@ jobs:
     runs-on: ubuntu-latest
     # Environment: https://modelcontextprotocol.io/registry
     if: github.event_name == 'release' || github.event_name == 'push'
+    permissions:
+      issues: write
 
     steps:
       - name: Create Issue for Manual MCP Submission
