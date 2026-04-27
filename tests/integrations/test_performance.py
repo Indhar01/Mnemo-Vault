@@ -34,18 +34,18 @@ def sample_notes(temp_vaults):
     for i in range(100):
         note_path = obsidian_vault / f"note_{i}.md"
         content = f"""---
-title: Test Note {i}
-tags: [test, performance]
----
+        title: Test Note {i}
+        tags: [test, performance]
+        ---
 
-# Test Note {i}
+        # Test Note {i}
 
-This is test note number {i}.
+        This is test note number {i}.
 
-It contains several [[note_{(i + 1) % 100}|wikilinks]] and #tags.
+        It contains several [[note_{(i + 1) % 100}|wikilinks]] and #tags.
 
-Some more content here with [[note_{(i - 1) % 100}]].
-"""
+        Some more content here with [[note_{(i - 1) % 100}]].
+        """
         note_path.write_text(content, encoding="utf-8")
         notes.append(note_path)
 
@@ -97,10 +97,18 @@ class TestSQLitePerformance:
 
         # Only assert both complete within a generous absolute time limit.
         # Relative comparisons are not reliable across different CI environments.
-        assert (
-            sqlite_duration < 120.0
-        ), f"SQLite write took too long: {sqlite_duration:.3f}s"
-        assert json_duration < 120.0, f"JSON write took too long: {json_duration:.3f}s"
+        # 120 s is intentionally very generous so the test only fails on a true
+        # hang or runaway loop, not on a slow CI machine.
+        MAX_WRITE_DURATION_S = 120.0
+
+        assert sqlite_duration < MAX_WRITE_DURATION_S, (
+            f"SQLite write took too long: {sqlite_duration:.3f}s "
+            f"(limit: {MAX_WRITE_DURATION_S}s, JSON write: {json_duration:.3f}s)"
+        )
+        assert json_duration < MAX_WRITE_DURATION_S, (
+            f"JSON write took too long: {json_duration:.3f}s "
+            f"(limit: {MAX_WRITE_DURATION_S}s, SQLite write: {sqlite_duration:.3f}s)"
+        )
 
         print(
             f"\nSQLite write: {sqlite_duration:.3f}s, JSON write: {json_duration:.3f}s"
@@ -151,6 +159,7 @@ class TestSQLitePerformance:
         assert stats["tracked_files"] == 100
         assert stats["total_size_bytes"] > 0
         assert "last_sync" in stats
+
 
 
 class TestLRUCachePerformance:
