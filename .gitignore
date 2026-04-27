@@ -45,7 +45,6 @@ env/
 
 # Archived planning documents (completed work)
 archive_planning_docs/
-archive_*/
 
 # Personal development notes
 feedback.md
@@ -54,7 +53,6 @@ CI_FIX_SUMMARY.md
 CHAT_FEATURES.md
 CHAT_IMPROVEMENTS.md
 TIMEOUT_FIX_SUMMARY.md
-IMPROVEMENTS_SUMMARY.md
 
 .mcpregistry_*
 
@@ -81,7 +79,6 @@ dmypy.json
 .pytype/
 
 # Documentation build artifacts
-docs/_build/
 docs/.doctrees/
 
 # Jupyter Notebooks
@@ -97,7 +94,6 @@ docs/.doctrees/
 .memograph_cache.json
 .memograph_graph.json
 .memograph_embeddings.json
-.mnemo_cache.json
 *.log
 
 # Distribution / packaging
@@ -143,6 +139,5 @@ claude_logs/
 memories.md/
 memories/
 
-# MCP registry token files
-.mcpregistry_github_token
-.mcpregistry_registry_token
+# Archive directories
+archive_*/

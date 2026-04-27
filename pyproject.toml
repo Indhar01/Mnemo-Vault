@@ -3,13 +3,13 @@ requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "mnemo-vault"
-version = "0.0.2"
+name = "memograph"
+version = "0.3.0"
 
 authors = [
-  { name="Mnemo Contributors", email="author@example.com" },
+  { name="Indirakumar", email="itsmeindirakumar@gmail.com" },
 ]
-description = "A graph-based memory vault for LLMs with intelligent retrieval using knowledge graphs, hybrid search, and semantic embeddings"
+description = "A graph-based memory system for LLMs with intelligent retrieval using knowledge graphs, hybrid search, and semantic embeddings"
 readme = "README.md"
 requires-python = ">=3.10"
 license = { text = "MIT" }
@@ -62,11 +62,12 @@ classifiers = [
 dependencies = [
     "PyYAML>=6.0",
     "requests>=2.31.0",
+    "mcp>=1.0.0",
 ]
 
 [project.optional-dependencies]
 openai = [
-    "openai>=1.0.0",
+    "openai>=1.0.0,<2.0.0",
     "tiktoken>=0.5.0",
 ]
 anthropic = [
@@ -75,43 +76,59 @@ anthropic = [
 ollama = [
     "ollama>=0.3.0",
 ]
+litellm = [
+    "litellm>=1.52.0,<2.0.0",
+]
 embeddings = [
     "sentence-transformers>=2.2.0",
     "numpy>=1.24.0",
 ]
+web = [
+    "fastapi>=0.104.0",
+    "uvicorn[standard]>=0.24.0",
+]
+integrations = [
+    "watchdog>=3.0.0",
+    "python-frontmatter>=1.0.0",
+]
 all = [
-    "mnemo-vault[openai,anthropic,ollama,embeddings]",
+    "memograph[openai,anthropic,ollama,litellm,embeddings,integrations]",
 ]
 dev = [
     "pytest>=7.4.0",
     "pytest-cov>=4.1.0",
     "pytest-asyncio>=0.21.0",
+    "pytest-benchmark>=4.0.0",
     "ruff>=0.7.0",
     "mypy>=1.7.0",
     "pre-commit>=3.5.0",
     "black>=23.11.0",
     "isort>=5.12.0",
+    "psutil>=5.9.0",
+    "rich>=13.0.0",
     "types-PyYAML>=6.0",
     "types-requests>=2.31.0",
+    "watchdog>=3.0.0",
+    "python-frontmatter>=1.0.0",
 ]
 
 [project.urls]
-Homepage = "https://github.com/Indhar01/Mnemo-Vault"
-Documentation = "https://github.com/Indhar01/Mnemo-Vault#readme"
-Repository = "https://github.com/Indhar01/Mnemo-Vault"
-Issues = "https://github.com/Indhar01/Mnemo-Vault/issues"
-Changelog = "https://github.com/Indhar01/Mnemo-Vault/blob/main/CHANGELOG.md"
+Homepage = "https://github.com/Indhar01/MemoGraph"
+Documentation = "https://github.com/Indhar01/MemoGraph#readme"
+Repository = "https://github.com/Indhar01/MemoGraph"
+Issues = "https://github.com/Indhar01/MemoGraph/issues"
+Changelog = "https://github.com/Indhar01/MemoGraph/blob/main/CHANGELOG.md"
 
 [project.scripts]
-mnemo = "mnemo.cli:main"
+memograph = "memograph.cli:main"
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["mnemo*"]
+include = ["memograph*"]
 namespaces = false
 
 [tool.setuptools.package-data]
-mnemo = ["py.typed"]
+memograph = ["py.typed"]
 
 # Ruff configuration
 [tool.ruff]
@@ -143,6 +160,7 @@ ignore = [
 "tests/**/*.py" = [
     "ARG",  # Unused function arguments
     "S101", # Use of assert
+    "E402", # Module level import not at top of file (for pytest.importorskip)
 ]
 "examples/**/*.py" = [
     "T201", # print statements
@@ -172,6 +190,98 @@ ignore_missing_imports = true
 module = "tests.*"
 disallow_untyped_defs = false
 
+[[tool.mypy.overrides]]
+module = "memograph.integrations.notion.client"
+ignore_errors = true
+
+[[tool.mypy.overrides]]
+module = "memograph.integrations.notion.auth"
+ignore_errors = true
+
+[[tool.mypy.overrides]]
+module = "memograph.integrations.notion.integration"
+ignore_errors = true
+
+[[tool.mypy.overrides]]
+module = "memograph.integrations.obsidian.sync_state"
+ignore_errors = true
+
+[[tool.mypy.overrides]]
+module = "memograph.integrations.obsidian.sync"
+ignore_errors = true
+
+[[tool.mypy.overrides]]
+module = "memograph.integrations.obsidian.watcher"
+ignore_errors = true
+
+[[tool.mypy.overrides]]
+module = "memograph.cli_infrastructure_helpers"
+ignore_errors = true
+
+[[tool.mypy.overrides]]
+module = "memograph.cli_helpers"
+ignore_errors = true
+
+[[tool.mypy.overrides]]
+module = "memograph.cli_batch_helpers"
+ignore_errors = true
+
+[[tool.mypy.overrides]]
+module = "memograph.cli"
+ignore_errors = true
+
+[[tool.mypy.overrides]]
+module = "memograph.core.kernel"
+ignore_errors = true
+
+[[tool.mypy.overrides]]
+module = "memograph.core.config"
+ignore_errors = true
+
+[[tool.mypy.overrides]]
+module = "memograph.core.indexer"
+ignore_errors = true
+
+[[tool.mypy.overrides]]
+module = "memograph.core.logging_config"
+ignore_errors = true
+
+[[tool.mypy.overrides]]
+module = "memograph.core.kernel_gam_async"
+ignore_errors = true
+
+[[tool.mypy.overrides]]
+module = "memograph.mcp.conversation_monitor"
+ignore_errors = true
+
+[[tool.mypy.overrides]]
+module = "memograph.mcp.server"
+ignore_errors = true
+
+[[tool.mypy.overrides]]
+module = "memograph.ai.content_analyzer"
+ignore_errors = true
+
+[[tool.mypy.overrides]]
+module = "memograph.ai.gap_detector"
+ignore_errors = true
+
+[[tool.mypy.overrides]]
+module = "memograph.ai.auto_tagger"
+ignore_errors = true
+
+[[tool.mypy.overrides]]
+module = "memograph.adapters.embeddings.openai"
+ignore_errors = true
+
+[[tool.mypy.overrides]]
+module = "memograph.adapters.llm.litellm_adapter"
+ignore_errors = true
+
+[[tool.mypy.overrides]]
+module = "memograph.web.backend.errors"
+ignore_errors = true
+
 # Pytest configuration
 [tool.pytest.ini_options]
 testpaths = ["tests"]
@@ -182,7 +292,7 @@ addopts = [
     "-ra",
     "--strict-markers",
     "--strict-config",
-    "--cov=mnemo",
+    "--cov=memograph",
     "--cov-report=term-missing:skip-covered",
     "--cov-report=html",
     "--cov-report=xml",
@@ -191,6 +301,10 @@ markers = [
     "slow: marks tests as slow (deselect with '-m \"not slow\"')",
     "integration: marks tests as integration tests",
     "unit: marks tests as unit tests",
+    "stress: marks tests as stress tests (deselect with '-m \"not stress\"')",
+    "stress: marks tests as stress tests (resource intensive)",
+    "benchmark: marks tests as benchmarks",
+    "load: marks tests as load tests",
 ]
 asyncio_mode = "auto"
 filterwarnings = [
@@ -201,13 +315,17 @@ filterwarnings = [
 
 # Coverage configuration
 [tool.coverage.run]
-source = ["mnemo"]
+source = ["memograph"]
 branch = true
 omit = [
     "*/tests/*",
     "*/test_*.py",
     "*/__pycache__/*",
     "*/site-packages/*",
+    "memograph/mcp/run_server.py",
+    "memograph/mcp/__main__.py",
+    "memograph/mcp_setup.py",
+    "memograph/importers/*",
 ]
 
 [tool.coverage.report]

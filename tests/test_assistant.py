@@ -1,9 +1,13 @@
 import tempfile
 import unittest
 
-from mnemo import MemoryKernel, MemoryType
-from mnemo.core.assistant import build_answer_prompt, build_cited_context, retrieve_cited_context
-from mnemo.core.node import MemoryNode
+from memograph import MemoryKernel, MemoryType
+from memograph.core.assistant import (
+    build_answer_prompt,
+    build_cited_context,
+    retrieve_cited_context,
+)
+from memograph.core.node import MemoryNode
 
 
 class AssistantTests(unittest.TestCase):

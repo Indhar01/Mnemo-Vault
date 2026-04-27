@@ -1,6 +1,6 @@
 """Example showing different memory types."""
 
-from mnemo import MemoryKernel, MemoryType
+from memograph import MemoryKernel, MemoryType
 
 kernel = MemoryKernel("~/my-vault")
 

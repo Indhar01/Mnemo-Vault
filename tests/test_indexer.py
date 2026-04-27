@@ -2,8 +2,8 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from mnemo.core.graph import VaultGraph
-from mnemo.core.indexer import VaultIndexer
+from memograph.core.graph import VaultGraph
+from memograph.core.indexer import VaultIndexer
 
 
 class IndexerTests(unittest.TestCase):

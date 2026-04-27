@@ -1,6 +1,6 @@
-"""Basic usage example for Mnemo-Vault."""
+"""Basic usage example for MemoGraph."""
 
-from mnemo import MemoryKernel, MemoryType
+from memograph import MemoryKernel, MemoryType
 
 # Initialize the kernel
 kernel = MemoryKernel("~/my-vault")
