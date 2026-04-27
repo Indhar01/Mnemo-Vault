@@ -22,6 +22,11 @@ share/python-wheels/
 .installed.cfg
 *.egg
 MANIFEST
+.roo
+
+docs/_build/
+test_data
+test_vault
 
 # Virtual Environment
 .venv/
@@ -37,8 +42,26 @@ env/
 *.swo
 *~
 .DS_Store
+
+# Archived planning documents (completed work)
+archive_planning_docs/
+archive_*/
+
+# Personal development notes
+feedback.md
+MIGRATION_TO_RECALLGRAPH.md
+CI_FIX_SUMMARY.md
+CHAT_FEATURES.md
+CHAT_IMPROVEMENTS.md
+TIMEOUT_FIX_SUMMARY.md
 IMPROVEMENTS_SUMMARY.md
-archive_2026-03-02/
+
+.mcpregistry_*
+
+node_modules/
+.bob/
+.cline/
+.claude/
 
 # Testing
 .pytest_cache/
@@ -57,7 +80,7 @@ coverage.xml
 dmypy.json
 .pytype/
 
-# Documentation
+# Documentation build artifacts
 docs/_build/
 docs/.doctrees/
 
@@ -71,6 +94,9 @@ docs/.doctrees/
 .env.*.local
 
 # Project specific
+.memograph_cache.json
+.memograph_graph.json
+.memograph_embeddings.json
 .mnemo_cache.json
 *.log
 
@@ -84,3 +110,39 @@ build/
 
 # uv
 uv.lock
+
+pre-push.ps1
+
+PRE-PUSH-GUIDE.md
+
+.bobignore
+.aider*
+
+# Stray test/scratch scripts at root
+quick_test.py
+simple_test.py
+run_manual_tests.py
+test_new_commands.py
+fix_unicode.py
+example_usage.ps1
+
+# Stray test data artifacts at root
+test_batch_memories.json
+test_export.json
+test_export*.json
+test_vault*/
+test_backups*/
+
+# Build/install output files accidentally saved as bare filenames
+[0-9].[0-9].[0-9]
+
+# Runtime / local log directories
+claude_logs/
+
+# Local vault/note data accidentally committed
+memories.md/
+memories/
+
+# MCP registry token files
+.mcpregistry_github_token
+.mcpregistry_registry_token
