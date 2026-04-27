@@ -114,3 +114,31 @@ PRE-PUSH-GUIDE.md
 
 .bobignore
 .aider*
+
+# Stray test/scratch scripts at root
+quick_test.py
+simple_test.py
+run_manual_tests.py
+test_new_commands.py
+fix_unicode.py
+example_usage.ps1
+
+# Stray test data artifacts at root
+test_batch_memories.json
+test_export.json
+test_export*.json
+test_vault*/
+test_backups*/
+
+# Build/install output files accidentally saved as bare filenames
+[0-9].[0-9].[0-9]
+
+# Runtime / local log directories
+claude_logs/
+
+# Local vault/note data accidentally committed
+memories.md/
+memories/
+
+# Archive directories
+archive_*/
