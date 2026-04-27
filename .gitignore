@@ -23,8 +23,9 @@ share/python-wheels/
 *.egg
 MANIFEST
 .roo
-
 docs
+
+docs/_build/
 test_data
 test_vault
 
@@ -78,8 +79,7 @@ coverage.xml
 dmypy.json
 .pytype/
 
-# Documentation
-docs/_build/
+# Documentation build artifacts
 docs/.doctrees/
 
 # Jupyter Notebooks
