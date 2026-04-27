@@ -161,7 +161,6 @@ class TestSQLitePerformance:
         assert "last_sync" in stats
 
 
-
 class TestLRUCachePerformance:
     """Test LRU caching performance."""
 
